@@ -26,8 +26,8 @@ const PathPreview: React.FC<PathPreviewProps> = ({ path }) => {
       ctx.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2);
       ctx.fill();
     } else if (path.length > 1) {
-      const lats = path.map((p) => p.lat);
-      const lngs = path.map((p) => p.lng);
+      const lats = path.map(p => p.lat);
+      const lngs = path.map(p => p.lng);
       const minLat = Math.min(...lats);
       const maxLat = Math.max(...lats);
       const minLng = Math.min(...lngs);
@@ -41,8 +41,7 @@ const PathPreview: React.FC<PathPreviewProps> = ({ path }) => {
       const usableHeight = canvas.height - padding * 2;
 
       const getX = (lng: number) => padding + ((lng - minLng) / lngDiff) * usableWidth;
-      const getY = (lat: number) =>
-        canvas.height - (padding + ((lat - minLat) / latDiff) * usableHeight);
+      const getY = (lat: number) => canvas.height - (padding + ((lat - minLat) / latDiff) * usableHeight);
 
       // 畫連線
       ctx.beginPath();
