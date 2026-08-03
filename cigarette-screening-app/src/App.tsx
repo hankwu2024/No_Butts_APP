@@ -38,9 +38,9 @@ export default function App() {
         </div>
 
         <div className="flex bg-slate-100 p-1 rounded-lg">
-          <button onClick={() => setActiveTab('form')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'form' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-50'}`}>快篩填報</button>
-          <button onClick={() => setActiveTab('dashboard')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'dashboard' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-50'}`}>數據中心</button>
-          <button onClick={() => setActiveTab('admin')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'admin' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-50'}`}>後台管理</button>
+          <button onClick={() => setActiveTab('form')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all text-emerald-600 ${activeTab === 'form' ? 'bg-white shadow-sm' : ''}`}>快篩填報</button>
+          <button onClick={() => setActiveTab('dashboard')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all text-emerald-600 ${activeTab === 'dashboard' ? 'bg-white shadow-sm' : ''}`}>數據中心</button>
+          <button onClick={() => setActiveTab('admin')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all text-emerald-600 ${activeTab === 'admin' ? 'bg-slate-700 shadow-sm' : ''}`}>後台管理</button>
         </div>
       </div>
       <div className="p-4">

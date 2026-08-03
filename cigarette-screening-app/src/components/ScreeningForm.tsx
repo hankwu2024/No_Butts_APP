@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import {
   ClipboardList,
   MapPin,
@@ -31,6 +36,13 @@ interface ScreeningFormProps {
   onSubmitSuccess: () => void;
 }
 
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 const InputText = ({ label, name, value, onChange, placeholder, required, onLocate }: any) => (
   <div>
     <label className="block text-xs font-medium text-slate-500 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
@@ -62,7 +74,9 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
   const [path, setPath] = useState<{lat: number, lng: number, timestamp: number}[]>([]);
   const [distance, setDistance] = useState(0);
   const trackingRef = useRef<number | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const pathLayerRef = useRef<L.LayerGroup | null>(null);
 
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -148,62 +162,73 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
     } else {
       setFormData(prev => ({ ...prev, startAddress: '', endAddress: '' }));
     }
+  }, [path]);
 
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (path.length === 1) {
-          ctx.fillStyle = '#22c55e';
-          ctx.beginPath();
-          ctx.arc(canvas.width / 2, canvas.height / 2, 6, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (path.length > 1) {
-          const lats = path.map(p => p.lat);
-          const lngs = path.map(p => p.lng);
-          const minLat = Math.min(...lats);
-          const maxLat = Math.max(...lats);
-          const minLng = Math.min(...lngs);
-          const maxLng = Math.max(...lngs);
-          const latDiff = maxLat - minLat || 0.0001;
-          const lngDiff = maxLng - minLng || 0.0001;
-          const padding = 20;
-          const usableWidth = canvas.width - padding * 2;
-          const usableHeight = canvas.height - padding * 2;
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
 
-          const getX = (lng: number) => padding + ((lng - minLng) / lngDiff) * usableWidth;
-          const getY = (lat: number) => canvas.height - (padding + ((lat - minLat) / latDiff) * usableHeight);
+    const map = L.map(mapContainerRef.current).setView([23.6978, 120.9605], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(map);
+    mapRef.current = map;
 
-          ctx.beginPath();
-          ctx.strokeStyle = '#059669';
-          ctx.lineWidth = 3;
-          path.forEach((p, i) => {
-            const x = getX(p.lng);
-            const y = getY(p.lat);
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          });
-          ctx.stroke();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          map.setView([latitude, longitude], 17);
+          L.marker([latitude, longitude]).addTo(map).bindPopup('目前位置');
+        },
+        (err) => console.error(err),
+        { enableHighAccuracy: true }
+      );
+    }
 
-          path.forEach((p, i) => {
-            const x = getX(p.lng);
-            const y = getY(p.lat);
-            ctx.beginPath();
-            if (i === 0) {
-              ctx.fillStyle = '#22c55e';
-              ctx.arc(x, y, 6, 0, Math.PI * 2);
-            } else if (i === path.length - 1 && !isTracking) {
-              ctx.fillStyle = '#ef4444';
-              ctx.arc(x, y, 6, 0, Math.PI * 2);
-            } else {
-              ctx.fillStyle = '#3b82f6';
-              ctx.arc(x, y, 3, 0, Math.PI * 2);
-            }
-            ctx.fill();
-          });
-        }
-      }
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (pathLayerRef.current) {
+      map.removeLayer(pathLayerRef.current);
+      pathLayerRef.current = null;
+    }
+
+    if (path.length === 0) return;
+
+    const layerGroup = L.layerGroup();
+    const latlngs: [number, number][] = path.map(p => [p.lat, p.lng]);
+
+    if (latlngs.length > 1) {
+      L.polyline(latlngs, { color: '#059669', weight: 4 }).addTo(layerGroup);
+    }
+
+    path.forEach((p, i) => {
+      const isStart = i === 0;
+      const isEnd = i === path.length - 1 && !isTracking && path.length > 1;
+      const color = isStart ? '#22c55e' : isEnd ? '#ef4444' : '#3b82f6';
+      L.circleMarker([p.lat, p.lng], {
+        radius: isStart || isEnd ? 7 : 4,
+        color,
+        fillColor: color,
+        fillOpacity: 1,
+      }).addTo(layerGroup);
+    });
+
+    layerGroup.addTo(map);
+    pathLayerRef.current = layerGroup;
+
+    if (latlngs.length > 1) {
+      map.fitBounds(L.latLngBounds(latlngs), { padding: [30, 30] });
+    } else {
+      map.setView(latlngs[0], 17);
     }
   }, [path, isTracking]);
 
@@ -437,11 +462,9 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
                    <span>總距離：<span className="text-blue-600">{distance.toFixed(1)}</span> 公尺</span>
                 </div>
 
-                <canvas
-                  ref={canvasRef}
-                  width={400}
-                  height={250}
-                  className="w-full bg-white border border-slate-200 rounded-lg shadow-inner mb-2"
+                <div
+                  ref={mapContainerRef}
+                  className="w-full h-64 bg-white border border-slate-200 rounded-lg shadow-inner mb-2 z-0"
                 />
 
                 <div className="text-xs text-slate-500 flex justify-between">
