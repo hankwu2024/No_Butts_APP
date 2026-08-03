@@ -48,7 +48,9 @@
         "maxSelect": 1,
         "values": ["complex", "normal", "road_only"]
       },
-      { "name": "userId", "type": "text", "required": true }
+      { "name": "userId", "type": "text", "required": true },
+      { "name": "created", "type": "autodate", "onCreate": true, "onUpdate": false },
+      { "name": "updated", "type": "autodate", "onCreate": true, "onUpdate": true }
     ],
     "indexes": [
       "CREATE INDEX idx_screenings_recordId ON screenings (recordId)",
