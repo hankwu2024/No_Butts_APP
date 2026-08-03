@@ -1,0 +1,58 @@
+[
+  {
+    "name": "screenings",
+    "type": "base",
+    "system": false,
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "",
+    "updateRule": "",
+    "deleteRule": "",
+    "fields": [
+      { "name": "recordId", "type": "text", "required": true },
+      { "name": "date", "type": "text", "required": true },
+      { "name": "cityCode", "type": "text", "required": true },
+      { "name": "recorderName", "type": "text", "required": false },
+      { "name": "screenerName", "type": "text", "required": false },
+      { "name": "photographerName", "type": "text", "required": false },
+      { "name": "startAddress", "type": "text", "required": false },
+      { "name": "endAddress", "type": "text", "required": false },
+      {
+        "name": "direction",
+        "type": "select",
+        "required": true,
+        "maxSelect": 1,
+        "values": ["right", "left"]
+      },
+      { "name": "screenedCount", "type": "number", "required": false },
+      { "name": "actualPickedCount", "type": "number", "required": false },
+      { "name": "boxCount", "type": "number", "required": false },
+      { "name": "drainCount", "type": "number", "required": false },
+      { "name": "note", "type": "text", "required": false },
+      { "name": "photoCount", "type": "number", "required": false },
+      { "name": "images", "type": "json", "required": false },
+      { "name": "path", "type": "json", "required": false },
+      { "name": "distance", "type": "number", "required": false },
+      { "name": "hotspots", "type": "json", "required": false },
+      {
+        "name": "method",
+        "type": "select",
+        "required": true,
+        "maxSelect": 1,
+        "values": ["walk", "bike", "motor"]
+      },
+      {
+        "name": "roadType",
+        "type": "select",
+        "required": true,
+        "maxSelect": 1,
+        "values": ["complex", "normal", "road_only"]
+      },
+      { "name": "userId", "type": "text", "required": true }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_screenings_recordId ON screenings (recordId)",
+      "CREATE INDEX idx_screenings_userId ON screenings (userId)"
+    ]
+  }
+]
