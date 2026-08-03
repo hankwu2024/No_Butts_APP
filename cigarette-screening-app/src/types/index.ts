@@ -8,7 +8,7 @@ export interface Hotspot {
 export interface ScreeningData {
   id?: string;
   recordId: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   cityCode: string;
   recorderName: string;
   screenerName: string;
@@ -29,7 +29,8 @@ export interface ScreeningData {
   method: 'walk' | 'bike' | 'motor';
   roadType: 'complex' | 'normal' | 'road_only';
   userId: string;
-  createdAt: any;
+  createdAt?: any;
+  created?: string;
 }
 
 export type SortField = 'date' | 'actualPickedCount' | 'screenedCount' | 'recordId';

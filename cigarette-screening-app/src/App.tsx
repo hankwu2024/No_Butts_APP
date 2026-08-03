@@ -1,97 +1,53 @@
-import { useState, useEffect } from 'react';
-import { ClipboardList, MapPin, ShieldCheck, Loader2 } from 'lucide-react';
-import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import type { User } from 'firebase/auth';
-import { auth } from './config/firebase';
+import { useState } from 'react';
+import { ClipboardList } from 'lucide-react';
+import { getUserId } from './config/pocketbase';
+import { LOGO_URL } from './constants';
 import LoginScreen from './components/LoginScreen';
 import ScreeningForm from './components/ScreeningForm';
 import Dashboard from './components/Dashboard';
 import AdminPanel from './components/AdminPanel';
 import './App.css';
 
-type View = 'entry' | 'dashboard' | 'admin';
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'form' | 'dashboard' | 'admin'>('form');
+  const [imageError, setImageError] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const userId = getUserId();
 
-function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [view, setView] = useState<View>('entry');
-  const [isAppReady, setIsAppReady] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      if (u) {
-        setUser(u);
-      } else {
-        signInAnonymously(auth).catch(err => console.error("Auth error", err));
-      }
-      setAuthLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (authLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-emerald-50">
-        <Loader2 className="w-10 h-10 text-emerald-600 animate-spin" />
-        <p className="mt-4 text-emerald-800 font-bold">系統啟動中...</p>
-      </div>
-    );
-  }
-
-  if (!isAppReady) {
-    return <LoginScreen onLogin={() => setIsAppReady(true)} />;
+  if (!hasStarted) {
+    return <LoginScreen onLogin={() => setHasStarted(true)} />;
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24">
-      <main className="max-w-md mx-auto min-h-screen bg-white shadow-xl relative">
-        {/* Header */}
-        {view === 'entry' && (
-          <header className="bg-emerald-600 text-white p-6 rounded-b-3xl mb-6 shadow-lg">
-            <h1 className="text-2xl font-bold">菸蒂快篩填報</h1>
-            <p className="text-emerald-100 text-sm mt-1">公民科學家現場紀錄</p>
-          </header>
-        )}
-
-        <div className="px-4">
-          {view === 'entry' && user && (
-            <ScreeningForm user={user} onSubmitSuccess={() => setView('dashboard')} />
-          )}
-          {view === 'dashboard' && user && (
-            <Dashboard user={user} />
-          )}
-          {view === 'admin' && user && (
-            <AdminPanel user={user} />
-          )}
+    <div className="max-w-md mx-auto min-h-screen bg-slate-50 font-sans text-slate-900 relative shadow-2xl">
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-20 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border border-slate-100 shadow-sm ${imageError ? 'bg-emerald-600' : 'bg-white'}`}>
+             {!imageError ? (
+               <img
+                 src={LOGO_URL}
+                 alt="Logo"
+                 className="w-full h-full object-contain"
+                 onError={() => setImageError(true)}
+               />
+             ) : (
+               <ClipboardList className="w-5 h-5 text-white" />
+             )}
+          </div>
+          <h1 className="font-bold text-slate-800">菸蒂快篩</h1>
         </div>
 
-        {/* Bottom Navigation */}
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/80 backdrop-blur-md border-t border-slate-100 flex justify-around py-3 px-6 z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-          <button
-            onClick={() => setView('entry')}
-            className={`flex flex-col items-center gap-1 transition-colors ${view === 'entry' ? 'text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}
-          >
-            <ClipboardList className={`w-6 h-6 ${view === 'entry' ? 'fill-emerald-50' : ''}`} />
-            <span className="text-[10px] font-bold">填報</span>
-          </button>
-          <button
-            onClick={() => setView('dashboard')}
-            className={`flex flex-col items-center gap-1 transition-colors ${view === 'dashboard' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
-          >
-            <MapPin className={`w-6 h-6 ${view === 'dashboard' ? 'fill-blue-50' : ''}`} />
-            <span className="text-[10px] font-bold">儀表板</span>
-          </button>
-          <button
-            onClick={() => setView('admin')}
-            className={`flex flex-col items-center gap-1 transition-colors ${view === 'admin' ? 'text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
-          >
-            <ShieldCheck className={`w-6 h-6 ${view === 'admin' ? 'fill-slate-100' : ''}`} />
-            <span className="text-[10px] font-bold">後台</span>
-          </button>
-        </nav>
-      </main>
+        <div className="flex bg-slate-100 p-1 rounded-lg">
+          <button onClick={() => setActiveTab('form')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'form' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-50'}`}>快篩填報</button>
+          <button onClick={() => setActiveTab('dashboard')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'dashboard' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-50'}`}>數據中心</button>
+          <button onClick={() => setActiveTab('admin')} className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'admin' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-50'}`}>後台管理</button>
+        </div>
+      </div>
+      <div className="p-4">
+        {activeTab === 'form' && <ScreeningForm userId={userId} onSubmitSuccess={() => setActiveTab('dashboard')} />}
+        {activeTab === 'dashboard' && <Dashboard userId={userId} />}
+        {activeTab === 'admin' && <AdminPanel userId={userId} />}
+      </div>
     </div>
   );
 }
-
-export default App;

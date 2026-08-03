@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { User } from 'firebase/auth';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import {
   ClipboardList,
   MapPin,
@@ -22,15 +19,15 @@ import {
   Loader2,
   Save
 } from 'lucide-react';
-import { db, storage, app } from '../config/firebase';
-import { APP_ID, CITY_CODES } from '../constants';
-import type { ScreeningData, Hotspot } from '../types';
+import { pb } from '../config/pocketbase';
+import { CITY_CODES } from '../constants';
+import type { Hotspot } from '../types';
 import { resizeImage, calcDistance } from '../utils/helpers';
 import CounterInput from './CounterInput';
 import SelectionCard from './SelectionCard';
 
 interface ScreeningFormProps {
-  user: User;
+  userId: string;
   onSubmitSuccess: () => void;
 }
 
@@ -53,34 +50,16 @@ const InputText = ({ label, name, value, onChange, placeholder, required, onLoca
   </div>
 );
 
-interface FormDataState {
-  date: string;
-  cityCode: string;
-  recorderName: string;
-  screenerName: string;
-  photographerName: string;
-  startAddress: string;
-  endAddress: string;
-  direction: 'right' | 'left';
-  screenedCount: number;
-  actualPickedCount: number;
-  boxCount: number;
-  drainCount: number;
-  note: string;
-  method: '' | 'walk' | 'bike' | 'motor';
-  roadType: '' | 'complex' | 'normal' | 'road_only';
-}
-
-const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) => {
+const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("上傳中...");
-  const [modal, setModal] = useState<{ show: boolean; title: string; content: string }>({
+  const [gpsLoading] = useState(false);
+  const [modal, setModal] = useState<{show: boolean, title: string, content: string}>({
     show: false, title: '', content: ''
   });
 
-  // Tracking State
   const [isTracking, setIsTracking] = useState(false);
-  const [path, setPath] = useState<{ lat: number; lng: number; timestamp: number }[]>([]);
+  const [path, setPath] = useState<{lat: number, lng: number, timestamp: number}[]>([]);
   const [distance, setDistance] = useState(0);
   const trackingRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -91,7 +70,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
   const getToday = () => new Date().toISOString().split('T')[0];
 
-  const [formData, setFormData] = useState<FormDataState>({
+  const [formData, setFormData] = useState({
     date: getToday(),
     cityCode: 'G',
     recorderName: '',
@@ -115,7 +94,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: FormDataState) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +103,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
       try {
         const files = Array.from(e.target.files);
         const processedImages = await Promise.all(files.map(file => resizeImage(file)));
-        setPreviewImages((prev: string[]) => [...prev, ...processedImages]);
+        setPreviewImages(prev => [...prev, ...processedImages]);
       } catch (err) {
         console.error("Image processing failed", err);
         setModal({ show: true, title: "錯誤", content: "圖片處理失敗" });
@@ -135,7 +114,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
   };
 
   const removeImage = (index: number) => {
-    setPreviewImages((prev: string[]) => prev.filter((_, i) => i !== index));
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const updateHotspot = (index: number, field: keyof Hotspot, value: any) => {
@@ -156,18 +135,18 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
   useEffect(() => {
     let dist = 0;
     for (let i = 1; i < path.length; i++) {
-      dist += calcDistance(path[i - 1].lat, path[i - 1].lng, path[i].lat, path[i].lng);
+      dist += calcDistance(path[i-1].lat, path[i-1].lng, path[i].lat, path[i].lng);
     }
     setDistance(dist);
 
     if (path.length > 0) {
-      setFormData((prev: FormDataState) => ({
+      setFormData(prev => ({
         ...prev,
         startAddress: `${path[0].lat.toFixed(6)}, ${path[0].lng.toFixed(6)}`,
         endAddress: `${path[path.length - 1].lat.toFixed(6)}, ${path[path.length - 1].lng.toFixed(6)}`
       }));
     } else {
-      setFormData((prev: FormDataState) => ({ ...prev, startAddress: '', endAddress: '' }));
+      setFormData(prev => ({ ...prev, startAddress: '', endAddress: '' }));
     }
 
     const canvas = canvasRef.current;
@@ -252,7 +231,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
       const fetchLocation = () => {
         navigator.geolocation.getCurrentPosition((pos) => {
-          setPath((prev: { lat: number; lng: number; timestamp: number }[]) => [...prev, { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() }]);
+          setPath(prev => [...prev, { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() }]);
         }, (err) => console.error(err), { enableHighAccuracy: true });
       };
 
@@ -261,8 +240,26 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
     }
   };
 
+  const generateRecordId = async () => {
+    try {
+      const dateStr = formData.date.replace(/-/g, '');
+      const prefix = `${formData.cityCode}${dateStr}`;
+
+      const result = await pb.collection('screenings').getList(1, 1, {
+        filter: `cityCode = "${formData.cityCode}" && date = "${formData.date}"`
+      });
+      const count = result.totalItems + 1;
+      const sequence = String(count).padStart(3, '0');
+      return `${prefix}-${sequence}`;
+    } catch (e) {
+      console.error("Error generating ID", e);
+      return `${formData.cityCode}${Date.now()}`;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (isTracking) {
       setModal({ show: true, title: "定位中", content: "請先按下「結束定位」再提交表單。" });
       return;
@@ -287,58 +284,33 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
     setLoading(true);
     setLoadingText("準備資料中...");
     try {
-      const dateStr = formData.date.replace(/-/g, '');
-      const recordId = `${formData.cityCode}${dateStr}-${Date.now().toString().slice(-3)}`;
-
-      const finalImages: string[] = [];
-      if (previewImages.length > 0) {
-        for (let i = 0; i < previewImages.length; i++) {
-          setLoadingText(`上傳圖片中... (${i + 1}/${previewImages.length})`);
-          try {
-            if (!storage || !app.options.storageBucket || app.options.storageBucket === 'dummy') {
-              throw new Error("Storage not configured");
-            }
-            const imageRef = ref(storage, `artifacts/${APP_ID}/public/images/${recordId}_${Date.now()}_${i}.jpg`);
-            await uploadString(imageRef, previewImages[i], 'data_url');
-            const url = await getDownloadURL(imageRef);
-            finalImages.push(url);
-          } catch (e) {
-            console.warn("Storage 上傳失敗，降級使用 Base64 儲存", e);
-            finalImages.push(previewImages[i]);
-          }
-        }
-      }
+      const recordId = await generateRecordId();
 
       setLoadingText("儲存紀錄中...");
 
-      const safeData = {
+      const payload = {
         ...formData,
         screenedCount: Math.max(0, formData.screenedCount),
         actualPickedCount: Math.max(0, formData.actualPickedCount),
         boxCount: Math.max(0, formData.boxCount),
         drainCount: Math.max(0, formData.drainCount),
-        hotspots: hotspots.filter(h => h.address).map(h => ({ ...h, count: Math.max(0, h.count) }))
-      };
-
-      const payload: ScreeningData = {
-        ...safeData,
+        hotspots: hotspots.filter(h => h.address).map(h => ({...h, count: Math.max(0, h.count)})),
         method: formData.method as 'walk' | 'bike' | 'motor',
         roadType: formData.roadType as 'complex' | 'normal' | 'road_only',
         recordId,
-        userId: user.uid,
-        photoCount: finalImages.length,
-        images: finalImages,
-        path: path,
-        distance: distance,
-        createdAt: serverTimestamp()
+        userId,
+        photoCount: previewImages.length,
+        images: previewImages,
+        path,
+        distance,
       };
 
-      await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'screenings'), payload);
+      await pb.collection('screenings').create(payload);
 
       setModal({
         show: true,
         title: "上傳成功",
-        content: `案件編號：${recordId}\n(照片已記錄數量: ${finalImages.length} 張)`
+        content: `案件編號：${recordId}\n(照片已記錄數量: ${previewImages.length} 張)`
       });
 
     } catch (err) {
@@ -350,7 +322,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
   };
 
   const handleModalClose = () => {
-    setModal((prev: { show: boolean; title: string; content: string }) => ({ ...prev, show: false }));
+    setModal(prev => ({ ...prev, show: false }));
     if (modal.title === "上傳成功") {
       onSubmitSuccess();
     }
@@ -358,21 +330,31 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pb-8">
+      {gpsLoading && (
+        <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+             <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full">
+                 <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
+                 <h3 className="font-bold text-lg text-slate-800 mb-2">正在定位中...</h3>
+                 <p className="text-slate-500 text-sm">請稍候，正在獲取 GPS 座標</p>
+             </div>
+        </div>
+      )}
+
       {modal.show && (
         <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col max-w-sm w-full">
-            <h3 className="font-bold text-lg text-slate-800 mb-2">{modal.title}</h3>
-            <p className="text-slate-600 text-sm whitespace-pre-wrap mb-6 leading-relaxed">
-              {modal.content}
-            </p>
-            <button
-              type="button"
-              onClick={handleModalClose}
-              className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors"
-            >
-              確定
-            </button>
-          </div>
+             <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col max-w-sm w-full">
+                 <h3 className="font-bold text-lg text-slate-800 mb-2">{modal.title}</h3>
+                 <p className="text-slate-600 text-sm whitespace-pre-wrap mb-6 leading-relaxed">
+                    {modal.content}
+                 </p>
+                 <button
+                    type="button"
+                    onClick={handleModalClose}
+                    className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors"
+                 >
+                    確定
+                 </button>
+             </div>
         </div>
       )}
 
@@ -381,8 +363,8 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-          <ClipboardList className="w-5 h-5 text-emerald-600" />
-          基本資料
+           <ClipboardList className="w-5 h-5 text-emerald-600" />
+           基本資料
         </h2>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -409,84 +391,84 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-          <Footprints className="w-5 h-5 text-emerald-600" />
-          快篩方式與型態
+           <Footprints className="w-5 h-5 text-emerald-600" />
+           快篩方式與型態
         </h2>
 
         <label className="block text-xs font-medium text-slate-500 mb-2">移動方式 <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-3 gap-2 mb-6">
-          <SelectionCard selected={formData.method === 'walk'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, method: 'walk' }))} title="步行" icon={<Footprints className="w-5 h-5" />} />
-          <SelectionCard selected={formData.method === 'bike'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, method: 'bike' }))} title="單車" icon={<Bike className="w-5 h-5" />} />
-          <SelectionCard selected={formData.method === 'motor'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, method: 'motor' }))} title="機動車" icon={<Car className="w-5 h-5" />} />
+          <SelectionCard selected={formData.method === 'walk'} onClick={() => setFormData(prev => ({...prev, method: 'walk'}))} title="步行" icon={<Footprints className="w-5 h-5" />} />
+          <SelectionCard selected={formData.method === 'bike'} onClick={() => setFormData(prev => ({...prev, method: 'bike'}))} title="單車" icon={<Bike className="w-5 h-5" />} />
+          <SelectionCard selected={formData.method === 'motor'} onClick={() => setFormData(prev => ({...prev, method: 'motor'}))} title="機動車" icon={<Car className="w-5 h-5" />} />
         </div>
 
         <label className="block text-xs font-medium text-slate-500 mb-2">路段型態 <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-3 gap-2">
-          <SelectionCard smallText selected={formData.roadType === 'complex'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, roadType: 'complex' }))} title="複雜" subtitle="(人行+花圃)" />
-          <SelectionCard smallText selected={formData.roadType === 'normal'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, roadType: 'normal' }))} title="普通" subtitle="(人行)" />
-          <SelectionCard smallText selected={formData.roadType === 'road_only'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, roadType: 'road_only' }))} title="純馬路" />
+          <SelectionCard smallText selected={formData.roadType === 'complex'} onClick={() => setFormData(prev => ({...prev, roadType: 'complex'}))} title="複雜" subtitle="(人行+花圃)" />
+          <SelectionCard smallText selected={formData.roadType === 'normal'} onClick={() => setFormData(prev => ({...prev, roadType: 'normal'}))} title="普通" subtitle="(人行)" />
+          <SelectionCard smallText selected={formData.roadType === 'road_only'} onClick={() => setFormData(prev => ({...prev, roadType: 'road_only'}))} title="純馬路" />
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-emerald-600" />
-          快篩地點與方向
+           <MapPin className="w-5 h-5 text-emerald-600" />
+           快篩地點與方向
         </h2>
 
         <div className="mb-4">
           <label className="block text-xs font-medium text-slate-500 mb-2">軌跡定位 <span className="text-red-500">*</span></label>
           <div className="flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={toggleTracking}
-              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${isTracking ? 'bg-red-100 text-red-600 border border-red-200 animate-pulse' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
-            >
-              {isTracking ? (
-                <><Square className="w-5 h-5" fill="currentColor" /> 結束定位</>
-              ) : (
-                <><Play className="w-5 h-5" fill="currentColor" /> 開始定位</>
-              )}
-            </button>
+             <button
+               type="button"
+               onClick={toggleTracking}
+               className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${isTracking ? 'bg-red-100 text-red-600 border border-red-200 animate-pulse' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
+             >
+               {isTracking ? (
+                 <><Square className="w-5 h-5" fill="currentColor" /> 結束定位</>
+               ) : (
+                 <><Play className="w-5 h-5" fill="currentColor" /> 開始定位</>
+               )}
+             </button>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2 border-b border-slate-200 pb-2">
-                <span>已紀錄點數：<span className="text-emerald-600">{path.length}</span></span>
-                <span>總距離：<span className="text-blue-600">{distance.toFixed(1)}</span> 公尺</span>
-              </div>
+             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2 border-b border-slate-200 pb-2">
+                   <span>已紀錄點數：<span className="text-emerald-600">{path.length}</span></span>
+                   <span>總距離：<span className="text-blue-600">{distance.toFixed(1)}</span> 公尺</span>
+                </div>
 
-              <canvas
-                ref={canvasRef}
-                width={400}
-                height={250}
-                className="w-full bg-white border border-slate-200 rounded-lg shadow-inner mb-2"
-              />
+                <canvas
+                  ref={canvasRef}
+                  width={400}
+                  height={250}
+                  className="w-full bg-white border border-slate-200 rounded-lg shadow-inner mb-2"
+                />
 
-              <div className="text-xs text-slate-500 flex justify-between">
-                <span>起點: {path.length > 0 ? "已記錄" : "尚未開始"}</span>
-                <span>終點: {path.length > 1 && !isTracking ? "已記錄" : (isTracking ? "定位中..." : "尚未開始")}</span>
-              </div>
-            </div>
+                <div className="text-xs text-slate-500 flex justify-between">
+                   <span>起點: {path.length > 0 ? "已記錄" : "尚未開始"}</span>
+                   <span>終點: {path.length > 1 && !isTracking ? "已記錄" : (isTracking ? "定位中..." : "尚未開始")}</span>
+                </div>
+             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <SelectionCard selected={formData.direction === 'right'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, direction: 'right' }))} title="右向 (順向)" icon={<ArrowRight className="w-6 h-6" />} />
-          <SelectionCard selected={formData.direction === 'left'} onClick={() => setFormData((prev: FormDataState) => ({ ...prev, direction: 'left' }))} title="左向 (逆向)" icon={<ArrowLeft className="w-6 h-6" />} />
+          <SelectionCard selected={formData.direction === 'right'} onClick={() => setFormData(prev => ({...prev, direction: 'right'}))} title="右向 (順向)" icon={<ArrowRight className="w-6 h-6" />} />
+          <SelectionCard selected={formData.direction === 'left'} onClick={() => setFormData(prev => ({...prev, direction: 'left'}))} title="左向 (逆向)" icon={<ArrowLeft className="w-6 h-6" />} />
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-          <Trash2 className="w-5 h-5 text-emerald-600" />
-          數據統計
+           <Trash2 className="w-5 h-5 text-emerald-600" />
+           數據統計
         </h2>
 
         <div className="grid grid-cols-1 gap-6 mb-6">
-          <CounterInput label="1. 快篩估計數量" value={formData.screenedCount} onChange={(v) => setFormData((prev: FormDataState) => ({ ...prev, screenedCount: v }))} colorClass="text-emerald-600" btnClass="bg-emerald-100 text-emerald-700 hover:bg-emerald-200" />
-          <CounterInput label="2. 水溝蓋數量" value={formData.drainCount} onChange={(v) => setFormData((prev: FormDataState) => ({ ...prev, drainCount: v }))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
-          <CounterInput label="3. 菸盒數量" value={formData.boxCount} onChange={(v) => setFormData((prev: FormDataState) => ({ ...prev, boxCount: v }))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
-          <CounterInput label="4. 實際撿拾數量" value={formData.actualPickedCount} onChange={(v) => setFormData((prev: FormDataState) => ({ ...prev, actualPickedCount: v }))} colorClass="text-blue-600" bgClass="bg-blue-50" btnClass="bg-blue-100 text-blue-700 hover:bg-blue-200" />
+          <CounterInput label="1. 快篩估計數量" value={formData.screenedCount} onChange={(v) => setFormData(prev => ({...prev, screenedCount: v}))} colorClass="text-emerald-600" btnClass="bg-emerald-100 text-emerald-700 hover:bg-emerald-200" />
+          <CounterInput label="2. 水溝蓋數量" value={formData.drainCount} onChange={(v) => setFormData(prev => ({...prev, drainCount: v}))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
+          <CounterInput label="3. 菸盒數量" value={formData.boxCount} onChange={(v) => setFormData(prev => ({...prev, boxCount: v}))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
+          <CounterInput label="4. 實際撿拾數量" value={formData.actualPickedCount} onChange={(v) => setFormData(prev => ({...prev, actualPickedCount: v}))} colorClass="text-blue-600" bgClass="bg-blue-50" btnClass="bg-blue-100 text-blue-700 hover:bg-blue-200" />
         </div>
 
         <textarea name="note" value={formData.note} onChange={handleInputChange} placeholder="備註 (拍照紀錄或其他說明)..." className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none h-20 mb-4" />
@@ -502,7 +484,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
         {previewImages.length > 0 && (
           <div className="grid grid-cols-4 gap-2 animate-fadeIn">
-            {previewImages.map((src: string, idx: number) => (
+            {previewImages.map((src, idx) => (
               <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-sm group bg-black">
                 <img src={src} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
                 <button type="button" onClick={() => removeImage(idx)} className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 opacity-80 hover:opacity-100">
@@ -516,12 +498,12 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 border-l-4 border-l-orange-500">
         <h2 className="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-orange-500" />
-          菸蒂熱點通報
+           <AlertTriangle className="w-5 h-5 text-orange-500" />
+           菸蒂熱點通報
         </h2>
         <p className="text-xs text-orange-600 mb-4 bg-orange-50 p-2 rounded">定義：1平方公尺超過 50 根菸蒂</p>
 
-        {hotspots.map((hotspot: Hotspot, idx: number) => (
+        {hotspots.map((hotspot, idx) => (
           <div key={hotspot.id} className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 relative">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-bold text-slate-700 bg-orange-100 text-orange-800 px-2 py-0.5 rounded">熱點 #{idx + 1}</span>
@@ -534,12 +516,12 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
                 <input type="text" placeholder="請輸入地址或描述" value={hotspot.address} onChange={(e) => updateHotspot(idx, 'address', e.target.value)} className="w-full p-2 bg-white border border-slate-200 rounded text-sm" />
               </div>
               <div className="flex gap-4 items-center bg-white p-2 rounded border border-slate-200">
-                <label className="text-xs font-bold text-slate-600 shrink-0">此熱點菸蒂數:</label>
-                <div className="flex items-center gap-2 flex-1 justify-end">
-                  <button type="button" onClick={() => updateHotspot(idx, 'count', Math.max(0, hotspot.count - 1))} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><Minus className="w-4 h-4" /></button>
-                  <input type="number" value={hotspot.count} min="0" onChange={(e) => updateHotspot(idx, 'count', Math.max(0, parseInt(e.target.value) || 0))} className="w-16 text-center font-bold text-orange-600 outline-none" />
-                  <button type="button" onClick={() => updateHotspot(idx, 'count', hotspot.count + 1)} className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600"><Plus className="w-4 h-4" /></button>
-                </div>
+                 <label className="text-xs font-bold text-slate-600 shrink-0">此熱點菸蒂數:</label>
+                 <div className="flex items-center gap-2 flex-1 justify-end">
+                    <button type="button" onClick={() => updateHotspot(idx, 'count', Math.max(0, hotspot.count - 1))} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><Minus className="w-4 h-4"/></button>
+                    <input type="number" value={hotspot.count} min="0" onChange={(e) => updateHotspot(idx, 'count', Math.max(0, parseInt(e.target.value) || 0))} className="w-16 text-center font-bold text-orange-600 outline-none" />
+                    <button type="button" onClick={() => updateHotspot(idx, 'count', hotspot.count + 1)} className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600"><Plus className="w-4 h-4"/></button>
+                 </div>
               </div>
               <div>
                 <label className="text-xs text-slate-500 mb-1 block">備註</label>
@@ -564,4 +546,3 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ user, onSubmitSuccess }) 
 };
 
 export default ScreeningForm;
-
