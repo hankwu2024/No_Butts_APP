@@ -51,7 +51,11 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 68px;
+  flex-wrap: wrap;
+  min-height: 68px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  row-gap: 8px;
 }
 
 .brand {
@@ -88,24 +92,31 @@ a:hover { text-decoration: underline; }
 .nav-links a:hover { background: var(--green-100); text-decoration: none; }
 .nav-links a.active { background: var(--green-700); color: #fff; }
 
-.lang-switch { display: flex; gap: 4px; margin-left: 8px; flex-shrink: 0; }
+.lang-switch {
+  display: flex;
+  gap: 2px;
+  margin-left: 8px;
+  flex-shrink: 0;
+  background: var(--green-100);
+  border-radius: 999px;
+  padding: 3px;
+}
 
 .lang-switch button {
   font-family: inherit;
   cursor: pointer;
   background: transparent;
-  border: 1px solid var(--line);
+  border: none;
   border-radius: 999px;
-  padding: 5px 10px;
+  padding: 6px 13px;
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--green-900);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.lang-switch button.active { background: var(--green-700); border-color: var(--green-700); color: #fff; }
-.lang-switch button:hover { background: var(--green-100); }
-.lang-switch button.active:hover { background: var(--green-700); }
+.lang-switch button.active { background: var(--green-700); color: #fff; box-shadow: 0 2px 6px -1px rgba(20,67,42,0.4); }
+.lang-switch button:hover:not(.active) { background: rgba(31,107,63,0.14); }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -281,7 +292,7 @@ section.alt { background: var(--green-100); }
 .fact,
 .photo-grid figure img,
 .chip {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .card:hover,
@@ -289,12 +300,13 @@ section.alt { background: var(--green-100); }
 .stat:hover,
 .interest-card:hover,
 .fact:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 32px -14px rgba(20,67,42,0.3);
+  transform: translateY(-6px);
+  box-shadow: 6px 8px 0 var(--green-100), 0 10px 20px -12px rgba(20,67,42,0.35);
 }
 
 .photo-grid figure img:hover { transform: translateY(-4px) scale(1.02); }
-.chip:hover { transform: translateY(-3px); }
+.chip:hover { transform: translateY(-3px); box-shadow: 3px 4px 0 var(--sand-200); }
+.chip.gold:hover { box-shadow: 3px 4px 0 #f4dfa8; }
 
 /* ---------- Timeline ---------- */
 .timeline { position: relative; margin-left: 8px; padding-left: 28px; border-left: 3px solid var(--green-100); }
@@ -612,6 +624,7 @@ footer .copyright { width: 100%; margin-top: 20px; color: #7fa189; font-size: 0.
   .st-branches { grid-template-columns: 1fr; gap: 36px; }
   .st-detail { grid-template-columns: 1fr; }
   .st-detail-media { max-width: 220px; margin: 0 auto; }
-  .site-nav .wrap { height: auto; flex-direction: column; padding: 12px 24px; gap: 10px; }
+  .site-nav .wrap { flex-direction: column; padding: 12px 24px; gap: 10px; }
   .nav-links { overflow-x: auto; width: 100%; justify-content: center; }
+  .lang-switch { margin-left: 0; }
 }
