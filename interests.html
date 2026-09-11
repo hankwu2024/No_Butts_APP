@@ -190,13 +190,13 @@
   var nodes = document.querySelectorAll('.st-node');
   var activeSkill = 'karate';
 
-  function currentLang() { return window.currentLang || 'zh'; }
+  function getLang() { return window.currentLang || 'zh'; }
 
   function showSkill(key) {
     var s = skillData[key];
     if (!s) return;
     activeSkill = key;
-    var lang = currentLang();
+    var lang = getLang();
     var title = s.title[lang] || s.title.zh;
     detailRole.textContent = s.role[lang] || s.role.zh;
     detailTitle.textContent = title;
@@ -243,7 +243,6 @@
       <a href="https://reurl.cc/1Xa10p" target="_blank" rel="noopener">YouTube</a>
       <a href="https://reurl.cc/M6x84W" target="_blank" rel="noopener">Instagram</a>
       <a href="https://reurl.cc/lNjDQ6" target="_blank" rel="noopener">Facebook</a>
-      <a href="https://padlet.com/lostmow1125_1/h-ex7tpn8gzm1czs5b" target="_blank" rel="noopener">Portfolio</a>
     </div>
     <div class="copyright">© 2026 Hank Wu 吳昊翰・不落蒂聯盟 No Butts Alliance</div>
   </div>
