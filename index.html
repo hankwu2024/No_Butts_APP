@@ -13,11 +13,16 @@
   <div class="wrap">
     <div class="brand"><span class="dot"></span>Hank Wu 吳昊翰</div>
     <div class="nav-links">
-      <a href="index.html" class="active">首頁</a>
-      <a href="project.html">不落蒂聯盟</a>
-      <a href="interests.html">興趣愛好</a>
-      <a href="screening/index.html">菸蒂快篩</a>
-      <a href="about.html">關於我</a>
+      <a href="index.html" class="active" data-i18n="nav.home">首頁</a>
+      <a href="project.html" data-i18n="nav.project">不落蒂聯盟</a>
+      <a href="interests.html" data-i18n="nav.interests">興趣愛好</a>
+      <a href="screening/index.html" data-i18n="nav.screening">菸蒂快篩</a>
+      <a href="about.html" data-i18n="nav.about">關於我</a>
+    </div>
+    <div class="lang-switch">
+      <button type="button" data-lang="zh">中</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="ja">日</button>
     </div>
   </div>
 </nav>
@@ -25,12 +30,12 @@
 <header class="hero">
   <div class="wrap">
     <div>
-      <span class="eyebrow">👋 嗨，讓還不認識我的人也知道我在做什麼</span>
-      <h1>我是昊翰，<br>把<span class="accent">菸蒂</span>變成改變世界的起點。</h1>
-      <p class="lead">2023 年 8 月，我和 5 個朋友一起蹲下來撿菸蒂，開始了「不落蒂聯盟」。三年後，我們做了一個菸蒂快篩 APP、發明了智慧攔截網，還站上了副總統身邊發布國家海洋政策白皮書。除了環境行動，我也是荒野少年、空手道選手，喜歡看書、看電影。</p>
+      <span class="eyebrow" data-i18n="index.hero.eyebrow">👋 嗨，讓還不認識我的人也知道我在做什麼</span>
+      <h1 data-i18n="index.hero.title">我是昊翰，<br>把<span class="accent">菸蒂</span>變成改變世界的起點。</h1>
+      <p class="lead" data-i18n="index.hero.lead">2023 年 8 月，我和 5 個朋友一起蹲下來撿菸蒂，開始了「不落蒂聯盟」。三年後，我們做了一個菸蒂快篩 APP、發明了智慧攔截網，還站上了副總統身邊發布國家海洋政策白皮書。除了環境行動，我也是荒野少年、空手道選手，喜歡看書、看電影。</p>
       <div class="btn-row">
-        <a href="project.html" class="btn btn-primary">看看不落蒂聯盟的故事 →</a>
-        <a href="about.html" class="btn btn-ghost">認識我是誰</a>
+        <a href="project.html" class="btn btn-primary" data-i18n="index.hero.btn1">看看不落蒂聯盟的故事 →</a>
+        <a href="about.html" class="btn btn-ghost" data-i18n="index.hero.btn2">認識我是誰</a>
       </div>
     </div>
     <div class="hero-photo">
@@ -41,45 +46,45 @@
 </header>
 
 <div class="wrap stats">
-  <div class="stat"><span class="num">30,024+</span><span class="label">撿起的菸蒂數</span></div>
-  <div class="stat"><span class="num">94</span><span class="label">次淨街 / 倡議行動</span></div>
-  <div class="stat"><span class="num">88,000+</span><span class="label">觸及人數</span></div>
-  <div class="stat"><span class="num">9 年</span><span class="label">荒野保護協會夥伴</span></div>
+  <div class="stat"><span class="num">17,707+</span><span class="label" data-i18n="index.stats.butts">撿起的菸蒂數</span></div>
+  <div class="stat"><span class="num">94</span><span class="label" data-i18n="index.stats.actions">次淨街 / 倡議行動</span></div>
+  <div class="stat"><span class="num">117,608+</span><span class="label" data-i18n="index.stats.reach">觸及人數</span></div>
+  <div class="stat"><span class="num" data-i18n="index.stats.yearsNum">9 年</span><span class="label" data-i18n="index.stats.years">荒野保護協會夥伴</span></div>
 </div>
 
 <section>
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">About the site</span>
-      <h2>這個網站在說什麼？</h2>
-      <p>如果你剛認識我，或者只是在某個活動、新聞裡看到我的名字——這裡有三個分頁，用最快的方式讓你知道「吳昊翰是誰、在做什麼」。</p>
+      <h2 data-i18n="index.about.title">這個網站在說什麼？</h2>
+      <p data-i18n="index.about.lead">如果你剛認識我，或者只是在某個活動、新聞裡看到我的名字——這裡有三個分頁，用最快的方式讓你知道「吳昊翰是誰、在做什麼」。</p>
     </div>
     <div class="card-grid">
-      <div class="card">
+      <a class="card card-link" href="project.html">
         <div class="icon">🚭</div>
-        <h3>不落蒂聯盟</h3>
-        <p>從撿菸蒂到走進立法院、站上副總統身邊——我的環境行動主線，包含 APP、發明、獲獎與媒體報導。</p>
-        <p><a href="project.html">看完整故事 →</a></p>
-      </div>
-      <div class="card">
+        <h3 data-i18n="index.card1.title">不落蒂聯盟</h3>
+        <p data-i18n="index.card1.desc">從撿菸蒂到走進立法院、站上副總統身邊——我的環境行動主線，包含 APP、發明、獲獎與媒體報導。</p>
+        <span class="card-cta" data-i18n="index.card1.cta">看完整故事 →</span>
+      </a>
+      <a class="card card-link" href="interests.html">
         <div class="icon">🥋</div>
-        <h3>興趣愛好</h3>
-        <p>空手道金牌、帆船、重量訓練、荒野少年，還有讀了三次的《哈利波特》。</p>
-        <p><a href="interests.html">看我平常在幹嘛 →</a></p>
-      </div>
-      <div class="card">
+        <h3 data-i18n="index.card2.title">興趣愛好</h3>
+        <p data-i18n="index.card2.desc">空手道金牌、帆船、重量訓練、荒野少年，還有讀了三次的《哈利波特》。</p>
+        <span class="card-cta" data-i18n="index.card2.cta">看我平常在幹嘛 →</span>
+      </a>
+      <a class="card card-link" href="about.html">
         <div class="icon">🙋</div>
-        <h3>關於我</h3>
-        <p>我的角色、經歷時間軸，還有這一路上支持我的人。</p>
-        <p><a href="about.html">認識完整的我 →</a></p>
-      </div>
+        <h3 data-i18n="index.card3.title">關於我</h3>
+        <p data-i18n="index.card3.desc">我的角色、經歷時間軸，還有這一路上支持我的人。</p>
+        <span class="card-cta" data-i18n="index.card3.cta">認識完整的我 →</span>
+      </a>
     </div>
   </div>
 </section>
 
 <section class="alt">
   <div class="wrap">
-    <div class="quote">
+    <div class="quote" data-i18n="index.quote">
       有一次，一位政治人物跟我們說：<span>「小孩子關心環境，看起來很假。」</span> 我很難過，但我更想證明他是錯的。三年後，我們的行動被環境部長邀請到總統府開會——原來只要不放棄，就能把質疑變成最大的力量。
     </div>
   </div>
@@ -89,15 +94,15 @@
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">Highlights</span>
-      <h2>幾個你可能會認出來的瞬間</h2>
+      <h2 data-i18n="index.highlights.title">幾個你可能會認出來的瞬間</h2>
     </div>
     <div class="chip-row">
-      <span class="chip gold">🏆 2026 HundrED Youth Ambassador</span>
-      <span class="chip gold">🏆 2025 台灣海洋青年論壇 第一名</span>
-      <span class="chip">🎤 教育部 K-12 教育署 兒少代表</span>
-      <span class="chip">📺 公視《下課花路米》北極探險特輯</span>
-      <span class="chip">🇯🇵 日本兵庫縣新溫泉町國際交流</span>
-      <span class="chip">🤝 出席「國家海洋政策白皮書」發布會</span>
+      <span class="chip gold" data-i18n="index.highlights.chip1">🏆 2026 HundrED Youth Ambassador</span>
+      <span class="chip gold" data-i18n="index.highlights.chip2">🏆 2025 台灣海洋青年論壇 第一名</span>
+      <span class="chip" data-i18n="index.highlights.chip3">🎤 教育部 K-12 教育署 兒少代表</span>
+      <span class="chip" data-i18n="index.highlights.chip4">📺 公視《下課花路米》北極探險特輯</span>
+      <span class="chip" data-i18n="index.highlights.chip5">🇯🇵 日本兵庫縣新溫泉町國際交流</span>
+      <span class="chip" data-i18n="index.highlights.chip6">🤝 出席「國家海洋政策白皮書」發布會</span>
     </div>
   </div>
 </section>
@@ -106,7 +111,7 @@
   <div class="wrap">
     <div>
       <div class="brand" style="color:#fff;">Hank Wu 吳昊翰</div>
-      <p style="margin:8px 0 0; max-width: 40ch;">不落蒂聯盟發起人・荒野少年・空手道選手<br>用一根菸蒂大小的行動，做一件世界看得到的事。</p>
+      <p style="margin:8px 0 0; max-width: 40ch;" data-i18n="footer.tagline">不落蒂聯盟發起人・荒野少年・空手道選手<br>用一根菸蒂大小的行動，做一件世界看得到的事。</p>
     </div>
     <div class="links">
       <a href="mailto:lostmow1014@gmail.com">Email</a>
@@ -119,5 +124,6 @@
   </div>
 </footer>
 
+<script src="assets/i18n.js"></script>
 </body>
 </html>

@@ -88,6 +88,25 @@ a:hover { text-decoration: underline; }
 .nav-links a:hover { background: var(--green-100); text-decoration: none; }
 .nav-links a.active { background: var(--green-700); color: #fff; }
 
+.lang-switch { display: flex; gap: 4px; margin-left: 8px; flex-shrink: 0; }
+
+.lang-switch button {
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--green-900);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lang-switch button.active { background: var(--green-700); border-color: var(--green-700); color: #fff; }
+.lang-switch button:hover { background: var(--green-100); }
+.lang-switch button.active:hover { background: var(--green-700); }
+
 /* ---------- Hero ---------- */
 .hero {
   padding: 64px 0 40px;
@@ -101,6 +120,10 @@ a:hover { text-decoration: underline; }
   gap: 48px;
   align-items: center;
 }
+
+.hero-compact { padding: 40px 0 8px; }
+.hero-compact .wrap { display: block; }
+.hero-compact h1 { margin: 0; }
 
 .eyebrow {
   display: inline-flex;
@@ -247,6 +270,32 @@ section.alt { background: var(--green-100); }
 .card h3 { margin: 0 0 8px; color: var(--green-900); font-size: 1.1rem; }
 .card p { margin: 0; color: #55634e; font-size: 0.95rem; }
 
+.card-link { display: block; color: inherit; }
+.card-link:hover { text-decoration: none; }
+.card-cta { display: inline-block; margin-top: 10px; color: var(--green-700); font-weight: 600; font-size: 0.95rem; }
+
+/* ---------- Hover lift ---------- */
+.card,
+.stat,
+.interest-card,
+.fact,
+.photo-grid figure img,
+.chip {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover,
+.card-link:hover,
+.stat:hover,
+.interest-card:hover,
+.fact:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px -14px rgba(20,67,42,0.3);
+}
+
+.photo-grid figure img:hover { transform: translateY(-4px) scale(1.02); }
+.chip:hover { transform: translateY(-3px); }
+
 /* ---------- Timeline ---------- */
 .timeline { position: relative; margin-left: 8px; padding-left: 28px; border-left: 3px solid var(--green-100); }
 
@@ -266,6 +315,27 @@ section.alt { background: var(--green-100); }
 .tl-date { font-weight: 800; color: var(--green-700); font-size: 0.85rem; }
 .tl-item h4 { margin: 4px 0 6px; color: var(--green-900); font-size: 1.05rem; }
 .tl-item p { margin: 0; color: #55634e; font-size: 0.95rem; }
+
+/* ---------- Category filter ---------- */
+.cat-filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+
+.cat-btn {
+  font-family: inherit;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--green-900);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.cat-btn:hover { transform: translateY(-3px); }
+.cat-btn.active { background: var(--green-700); border-color: var(--green-700); color: #fff; }
+
+.action-grid .card[hidden] { display: none; }
 
 /* ---------- Badges / chips ---------- */
 .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }

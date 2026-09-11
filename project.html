@@ -13,11 +13,16 @@
   <div class="wrap">
     <div class="brand"><span class="dot"></span>Hank Wu 吳昊翰</div>
     <div class="nav-links">
-      <a href="index.html">首頁</a>
-      <a href="project.html" class="active">不落蒂聯盟</a>
-      <a href="interests.html">興趣愛好</a>
-      <a href="screening/index.html">菸蒂快篩</a>
-      <a href="about.html">關於我</a>
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="project.html" class="active" data-i18n="nav.project">不落蒂聯盟</a>
+      <a href="interests.html" data-i18n="nav.interests">興趣愛好</a>
+      <a href="screening/index.html" data-i18n="nav.screening">菸蒂快篩</a>
+      <a href="about.html" data-i18n="nav.about">關於我</a>
+    </div>
+    <div class="lang-switch">
+      <button type="button" data-lang="zh">中</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="ja">日</button>
     </div>
   </div>
 </nav>
@@ -26,10 +31,10 @@
   <div class="wrap">
     <div>
       <span class="eyebrow">🚭 No Butts Alliance</span>
-      <h1>不落蒂聯盟：<br>從<span class="accent">一根菸蒂</span>開始的環境行動</h1>
-      <p class="lead">一根菸蒂含有 4000 多種有毒物質，還能汙染 500 公升的水。全台灣每年被亂丟的菸蒂超過 900 萬根——換算起來，光是台灣就足以汙染 45 億公升的水。2023 年 8 月 23 日，我找了 5 個朋友，決定不再讓這件事被忽視。</p>
+      <h1 data-i18n="project.hero.title">不落蒂聯盟：<br>從<span class="accent">一根菸蒂</span>開始的環境行動</h1>
+      <p class="lead" data-i18n="project.hero.lead">一根菸蒂含有 4000 多種有毒物質，還能汙染 500 公升的水。全台灣每年被亂丟的菸蒂超過 900 萬根——換算起來，光是台灣就足以汙染 45 億公升的水。2023 年 8 月 23 日，我找了 5 個朋友，決定不再讓這件事被忽視。我是不落蒂聯盟的<strong>創辦人兼隊長</strong>，從第一次蹲下來撿菸蒂，到現在帶著團隊走進國會殿堂，一路都是我在領軍。</p>
       <div class="btn-row">
-        <a href="#story">看我們怎麼開始 →</a>
+        <a href="#story" data-i18n="project.hero.btn">看我們怎麼開始 →</a>
       </div>
     </div>
     <div class="hero-photo">
@@ -40,65 +45,181 @@
 </header>
 
 <div class="wrap stats">
-  <div class="stat"><span class="num">30,024+</span><span class="label">根菸蒂被撿起</span></div>
-  <div class="stat"><span class="num">94</span><span class="label">次淨街 / 倡議行動</span></div>
-  <div class="stat"><span class="num">88,000+</span><span class="label">線上線下觸及人數</span></div>
-  <div class="stat"><span class="num">300+</span><span class="label">人參加第二屆兒少行動論壇</span></div>
+  <div class="stat"><span class="num">17,707+</span><span class="label" data-i18n="project.stats.butts">根菸蒂被撿起</span></div>
+  <div class="stat"><span class="num">94</span><span class="label" data-i18n="project.stats.actions">次淨街 / 倡議行動</span></div>
+  <div class="stat"><span class="num">117,608+</span><span class="label" data-i18n="project.stats.reach">線上線下觸及人數</span></div>
+  <div class="stat"><span class="num">300+</span><span class="label" data-i18n="project.stats.forum">人參加第二屆兒少行動論壇</span></div>
 </div>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Action Map</span>
+      <h2 data-i18n="project.map.title">三年來的行動，分成七大類</h2>
+      <p data-i18n="project.map.lead">點一個分類，看看那個面向裡我們具體做了什麼——身為創辦人兼隊長，這些都是我帶著團隊一起做出來的。</p>
+    </div>
+    <div class="cat-filter">
+      <button type="button" class="cat-btn active" data-cat="all" data-i18n="cat.all">全部</button>
+      <button type="button" class="cat-btn" data-cat="advocacy" data-i18n="cat.advocacy">實體倡議</button>
+      <button type="button" class="cat-btn" data-cat="global" data-i18n="cat.global">國際交流</button>
+      <button type="button" class="cat-btn" data-cat="school" data-i18n="cat.school">入校宣導</button>
+      <button type="button" class="cat-btn" data-cat="media" data-i18n="cat.media">媒體報導</button>
+      <button type="button" class="cat-btn" data-cat="award" data-i18n="cat.award">參加比賽</button>
+      <button type="button" class="cat-btn" data-cat="art" data-i18n="cat.art">藝術創作</button>
+      <button type="button" class="cat-btn" data-cat="tech" data-i18n="cat.tech">科技創新</button>
+    </div>
+    <div class="card-grid action-grid">
+      <div class="card" data-cat="advocacy">
+        <div class="icon">🧹</div>
+        <h3 data-i18n="project.map.c1.title">94 次街頭淨街</h3>
+        <p data-i18n="project.map.c1.desc">三年來累積 94 次淨街與倡議行動，撿起 17,707+ 根菸蒂。</p>
+      </div>
+      <div class="card" data-cat="advocacy art">
+        <div class="icon">🎉</div>
+        <h3 data-i18n="project.map.c2.title">No Butts Day 快閃倡議</h3>
+        <p data-i18n="project.map.c2.desc">響應全球無菸蒂日，於宜蘭五十二甲濕地藝術節舉辦快閃倡議，串連《大水新娘》沉浸式戲劇的人潮一起響應。</p>
+      </div>
+      <div class="card" data-cat="global">
+        <div class="icon">🇯🇵</div>
+        <h3 data-i18n="project.map.c3.title">日本兵庫新溫泉町交流</h3>
+        <p data-i18n="project.map.c3.desc">兩次線上交流加上實地互訪，我方分享行動經驗，交流內容後來還成為當地學校的英文考題。</p>
+      </div>
+      <div class="card" data-cat="global">
+        <div class="icon">🌍</div>
+        <h3 data-i18n="project.map.c4.title">五國青年網絡</h3>
+        <p data-i18n="project.map.c4.desc">與加拿大 Buttwatch、荷蘭 No Plastic Filter、韓國、美國等跨國夥伴保持長期交流與資源串連。</p>
+      </div>
+      <div class="card" data-cat="school">
+        <div class="icon">🎓</div>
+        <h3 data-i18n="project.map.c5.title">大學與研究機構分享</h3>
+        <p data-i18n="project.map.c5.desc">受邀到台師大公民教育與領導學系開講，也曾在國家教育研究院研討會分享教育生態系經驗。</p>
+      </div>
+      <div class="card" data-cat="school">
+        <div class="icon">🏫</div>
+        <h3 data-i18n="project.map.c6.title">中學巡迴分享</h3>
+        <p data-i18n="project.map.c6.desc">走進恆毅高中、豐珠國中特教班等校園，把行動經驗帶給更多不同背景的學生。</p>
+      </div>
+      <div class="card" data-cat="media">
+        <div class="icon">📰</div>
+        <h3 data-i18n="project.map.c7.title">台灣媒體專訪</h3>
+        <p data-i18n="project.map.c7.desc">中央社、自由時報、太報、Yahoo News、少年報導者都曾報導我們的行動。</p>
+      </div>
+      <div class="card" data-cat="media">
+        <div class="icon">📺</div>
+        <h3 data-i18n="project.map.c8.title">日本媒體與電視特輯</h3>
+        <p data-i18n="project.map.c8.desc">公視《下課花路米》北極特輯、日本神戶新聞、日本海新聞都報導過我們的故事。</p>
+      </div>
+      <div class="card" data-cat="award">
+        <div class="icon">🥇</div>
+        <h3 data-i18n="project.map.c9.title">荒野環境行動論壇 雙料冠軍</h3>
+        <p data-i18n="project.map.c9.desc">2024 年華語組、2025 年英語組都拿下全國第一名。</p>
+      </div>
+      <div class="card" data-cat="award">
+        <div class="icon">🌟</div>
+        <h3 data-i18n="project.map.c10.title">國際級榮譽肯定</h3>
+        <p data-i18n="project.map.c10.desc">2025 年入選遠見「未來教育台灣100」、天下「教育創新100」；2026 年獲選 HundrED Youth Ambassador。</p>
+      </div>
+      <div class="card" data-cat="art">
+        <div class="icon">🎨</div>
+        <h3 data-i18n="project.map.c11.title">菸蒂北極熊裝置藝術</h3>
+        <p data-i18n="project.map.c11.desc">用撿到的菸蒂做成「北極熊」裝置藝術，呼籲菸蒂汙染也會影響到北極生態。</p>
+      </div>
+      <div class="card" data-cat="art">
+        <div class="icon">🎭</div>
+        <h3 data-i18n="project.map.c12.title">濕地藝術節戲劇串連</h3>
+        <p data-i18n="project.map.c12.desc">連續參與五十二甲溼地藝術節沉浸式戲劇《大水新娘》演出，並藉此串連 No Butts Day 快閃行動。</p>
+      </div>
+      <div class="card" data-cat="tech">
+        <div class="icon">📱</div>
+        <h3 data-i18n="project.map.c13.title">菸蒂快篩公民科學 APP</h3>
+        <p data-i18n="project.map.c13.desc">我發起並主導開發的公民科學 APP，紀錄每一次淨街的地點與數量，是不落蒂聯盟科技行動的其中一個分頁。</p>
+      </div>
+      <div class="card" data-cat="tech">
+        <div class="icon">🛠️</div>
+        <h3 data-i18n="project.map.c14.title">智慧菸蒂攔截網</h3>
+        <p data-i18n="project.map.c14.desc">第一年發明作品，用光感應設計攔截網，在水溝出水口把菸蒂攔下來，不讓它流進海裡。</p>
+      </div>
+      <div class="card" data-cat="tech">
+        <div class="icon">🦯</div>
+        <h3 data-i18n="project.map.c15.title">菸蒂拐杖 / 快速夾取工具</h3>
+        <p data-i18n="project.map.c15.desc">第二年發明作品，設計不用彎腰就能夾取菸蒂的多功能工具，讓長時間淨街行動更輕鬆。</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="story">
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">The story</span>
-      <h2>從被質疑，到站上總統府</h2>
-      <p>這條路走了三年，最難的不是撿菸蒂，而是說服大人「小孩子的行動不是演戲」。</p>
+      <h2 data-i18n="project.story.title">從被質疑，到站上總統府</h2>
+      <p data-i18n="project.story.lead">這條路走了三年，最難的不是撿菸蒂，而是說服大人「小孩子的行動不是演戲」。</p>
     </div>
     <div class="timeline">
       <div class="tl-item">
         <div class="tl-date">2023.08.23</div>
-        <h4>不落蒂聯盟成立</h4>
-        <p>看著學長姐的行動很受啟發，我找了 5 個朋友一起蹲下來撿菸蒂，決定把這件事持續做下去。</p>
+        <h4 data-i18n="project.tl1.title">不落蒂聯盟成立</h4>
+        <p data-i18n="project.tl1.desc">看著學長姐的行動很受啟發，我找了 5 個朋友一起蹲下來撿菸蒂，決定把這件事持續做下去。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2023.12.18</div>
-        <h4>第一次接觸決策者</h4>
-        <p>與總統候選人會面，替我們關心的議題發聲。同一時期，也曾被一位政治人物質疑「小孩子關心環境看起來很假」——那句話很傷人，但也成了我們持續三年的動力。</p>
+        <h4 data-i18n="project.tl2.title">第一次接觸決策者</h4>
+        <p data-i18n="project.tl2.desc">與總統候選人會面，替我們關心的議題發聲。同一時期，也曾被一位政治人物質疑「小孩子關心環境看起來很假」——那句話很傷人，但也成了我們持續三年的動力。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2024</div>
-        <h4>發明 + 拿下第一批全國獎項</h4>
-        <p>發明「智慧菸蒂攔截網」，在 IEYI 國際發明展上展出並依專家建議持續改良。同年拿下瑪利亞社會福利基金會小學生公益行動獎、第十屆荒野環境行動論壇全國賽（華語組）第一名、鴻海／聯發科「數位社會創新獎」能量獎、環境部創意競賽銀獎。</p>
+        <h4 data-i18n="project.tl3.title">發明 + 拿下第一批全國獎項</h4>
+        <p data-i18n="project.tl3.desc">發明「智慧菸蒂攔截網」，在 IEYI 國際發明展上展出並依專家建議持續改良。同年拿下瑪利亞社會福利基金會小學生公益行動獎、第十屆荒野環境行動論壇全國賽（華語組）第一名、鴻海／聯發科「數位社會創新獎」能量獎、環境部創意競賽銀獎。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2025.01.05</div>
-        <h4>第一屆兒少行動論壇</h4>
-        <p>以兒少代表身份參與座談，並發表「創新攔截網」發明，吸引約 150 人參加。</p>
+        <h4 data-i18n="project.tl4.title">第一屆兒少行動論壇</h4>
+        <p data-i18n="project.tl4.desc">以兒少代表身份參與座談，並發表「創新攔截網」發明，吸引約 150 人參加。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2025.07.04 – 08.21</div>
-        <h4>走進立法院</h4>
-        <p>與林月琴立委、張雅玲立委當面討論菸蒂污染相關政策，把街頭的資料變成推動修法的依據。</p>
+        <h4 data-i18n="project.tl5.title">走進立法院</h4>
+        <p data-i18n="project.tl5.desc">與林月琴立委、張雅玲立委當面討論菸蒂污染相關政策，把街頭的資料變成推動修法的依據。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2025.09.02</div>
-        <h4>站上「國家海洋政策白皮書」發布會</h4>
-        <p>以青年代表身份出席，與副總統蕭美琴握手，共同見證白皮書發布——這是街頭行動走進國家政策現場的一刻。</p>
+        <h4 data-i18n="project.tl6.title">站上「國家海洋政策白皮書」發布會</h4>
+        <p data-i18n="project.tl6.desc">以青年代表身份出席，與副總統蕭美琴握手，共同見證白皮書發布——這是街頭行動走進國家政策現場的一刻。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2025.09.29</div>
-        <h4>暫停腳步，去花蓮光復鄉救災</h4>
-        <p>光復鄉發生水災，我們搭車前往協助清除家戶淤泥，把環境行動延伸到災後重建現場。</p>
+        <h4 data-i18n="project.tl7.title">暫停腳步，去花蓮光復鄉救災</h4>
+        <p data-i18n="project.tl7.desc">光復鄉發生水災，我們搭車前往協助清除家戶淤泥，把環境行動延伸到災後重建現場。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2026.01.04</div>
-        <h4>第二屆兒少行動論壇</h4>
-        <p>活動前兩週場地突然被取消——對方認為「菸蒂」主題太負面。我們沒有放棄，換了更大的場地，最後吸引超過 300 人參加，環境部長也親自到場承諾在總統府舉辦兒童氣候行動論壇。</p>
+        <h4 data-i18n="project.tl8.title">第二屆兒少行動論壇</h4>
+        <p data-i18n="project.tl8.desc">活動前兩週場地突然被取消——對方認為「菸蒂」主題太負面。我們沒有放棄，換了更大的場地，最後吸引超過 300 人參加，環境部長也親自到場承諾在總統府舉辦兒童氣候行動論壇。</p>
       </div>
       <div class="tl-item">
         <div class="tl-date">2026.02</div>
-        <h4>入選 2026 HundrED Youth Ambassador</h4>
-        <p>在全球 1,766 份申請中獲選，接下來將與各國青年領袖分享不落蒂聯盟的行動經驗。同期也前往日本兵庫縣新溫泉町進行國際文化交流。</p>
+        <h4 data-i18n="project.tl9.title">入選 2026 HundrED Youth Ambassador</h4>
+        <p data-i18n="project.tl9.desc">在全球 1,766 份申請中獲選，接下來將與各國青年領袖分享不落蒂聯盟的行動經驗。同期也前往日本兵庫縣新溫泉町進行國際文化交流。</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Snapshots</span>
+      <h2 data-i18n="project.snap.title">行動剪影</h2>
+      <p data-i18n="project.snap.lead">從街頭淨街、發明展到國際交流，這是三年來的一些畫面。</p>
+    </div>
+    <div class="photo-grid">
+      <figure><img src="assets/images/action_cleanup.jpg" alt="帶著夾子在街頭淨街"><figcaption data-i18n="project.snap.cap1">帶著夾子出發，在街頭撿菸蒂</figcaption></figure>
+      <figure><img src="assets/images/action_forum.jpg" alt="在兒少行動論壇座談分享"><figcaption data-i18n="project.snap.cap2">在兒少行動論壇座談上分享行動經驗</figcaption></figure>
+      <figure><img src="assets/images/action_invention_expo.jpg" alt="在 IEYI 國際發明展展出智慧攔截網"><figcaption data-i18n="project.snap.cap3">在 IEYI 國際發明展展出智慧菸蒂攔截網</figcaption></figure>
+      <figure><img src="assets/images/action_invention_stick.jpg" alt="菸蒂拐杖發明"><figcaption data-i18n="project.snap.cap4">第二年發明的菸蒂拐杖 / 快速夾取工具</figcaption></figure>
+      <figure><img src="assets/images/action_polarbear.jpg" alt="用撿到的菸蒂做成的北極熊裝置藝術"><figcaption data-i18n="project.snap.cap5">用撿到的菸蒂做成「北極熊」裝置藝術，呼籲菸蒂汙染也會影響到北極</figcaption></figure>
+      <figure><img src="assets/images/action_japan.jpg" alt="在日本兵庫縣新溫泉町國際文化交流"><figcaption data-i18n="project.snap.cap6">在日本兵庫縣新溫泉町進行國際文化交流</figcaption></figure>
+      <figure><img src="assets/images/action_infographic.jpg" alt="不落蒂聯盟行動介紹懶人包"><figcaption data-i18n="project.snap.cap7">不落蒂聯盟的行動介紹懶人包</figcaption></figure>
     </div>
   </div>
 </section>
@@ -107,14 +228,14 @@
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">What's next</span>
-      <h2>我的目標</h2>
-      <p>撿菸蒂只是開始，接下來我想推動更長遠的改變。</p>
+      <h2 data-i18n="project.goals.title">我的目標</h2>
+      <p data-i18n="project.goals.lead">撿菸蒂只是開始，接下來我想推動更長遠的改變。</p>
     </div>
     <div class="card-grid">
       <div class="card">
         <div class="icon">🏛️</div>
-        <h3>改變政策</h3>
-        <p>把街頭撿到的資料和三年來的行動經驗，變成推動菸蒂污染相關法規修訂的依據，讓改變不只發生在街頭，也發生在制度裡。</p>
+        <h3 data-i18n="project.goals.card.title">改變政策</h3>
+        <p data-i18n="project.goals.card.desc">把街頭撿到的資料和三年來的行動經驗，變成推動菸蒂污染相關法規修訂的依據，讓改變不只發生在街頭，也發生在制度裡。</p>
       </div>
     </div>
   </div>
@@ -124,24 +245,24 @@
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">Technology</span>
-      <h2>菸蒂快篩 APP 與我的發明</h2>
-      <p>撿菸蒂只能解決現在，我想用資料和工具，讓問題從源頭被看見、被攔住。</p>
+      <h2 data-i18n="project.tech.title">菸蒂快篩 APP 與我的發明</h2>
+      <p data-i18n="project.tech.lead">撿菸蒂只能解決現在，我想用資料和工具，讓問題從源頭被看見、被攔住。</p>
     </div>
     <div class="card-grid">
       <div class="card">
         <div class="icon">📱</div>
-        <h3>菸蒂快篩公民科學 APP</h3>
-        <p>紀錄每一次淨街撿拾的地點與數量，把散落街頭的菸蒂變成公部門也能參考的即時環境數據儀表板。</p>
+        <h3 data-i18n="project.tech.card1.title">菸蒂快篩公民科學 APP</h3>
+        <p data-i18n="project.tech.card1.desc">紀錄每一次淨街撿拾的地點與數量，把散落街頭的菸蒂變成公部門也能參考的即時環境數據儀表板。</p>
       </div>
       <div class="card">
         <div class="icon">🛠️</div>
-        <h3>智慧菸蒂攔截網</h3>
-        <p>第一年發明作品，用光感應設計攔截網，在水溝出水口把菸蒂攔下來，不讓它流進海裡。</p>
+        <h3 data-i18n="project.tech.card2.title">智慧菸蒂攔截網</h3>
+        <p data-i18n="project.tech.card2.desc">第一年發明作品，用光感應設計攔截網，在水溝出水口把菸蒂攔下來，不讓它流進海裡。</p>
       </div>
       <div class="card">
         <div class="icon">🦯</div>
-        <h3>菸蒂拐杖 / 快速夾取工具</h3>
-        <p>第二年發明作品，設計不用彎腰就能夾取菸蒂的多功能工具，讓長時間淨街行動更輕鬆。</p>
+        <h3 data-i18n="project.tech.card3.title">菸蒂拐杖 / 快速夾取工具</h3>
+        <p data-i18n="project.tech.card3.desc">第二年發明作品，設計不用彎腰就能夾取菸蒂的多功能工具，讓長時間淨街行動更輕鬆。</p>
       </div>
     </div>
   </div>
@@ -151,21 +272,33 @@
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">Awards & recognition</span>
-      <h2>這一路上收到的肯定</h2>
+      <h2 data-i18n="project.awards.title">這一路上收到的肯定</h2>
     </div>
     <div class="chip-row">
-      <span class="chip gold">2024 瑪利亞社會福利基金會「小學生公益行動」全國佳作</span>
-      <span class="chip gold">2024 金車教育基金會「愛讓世界動起來」全國優等獎</span>
-      <span class="chip gold">2024 第十屆荒野環境行動論壇全國賽 第一名（華語組）</span>
-      <span class="chip gold">2024 鴻海／聯發科「數位社會創新獎」能量獎</span>
-      <span class="chip">2024 環境部創意競賽 銀獎</span>
-      <span class="chip">2025 宜蘭幸福家全人協會「福氣公益獎」</span>
-      <span class="chip gold">2025 荒野環境行動論壇全國賽 第一名（英語組）</span>
-      <span class="chip">2025 金車教育基金會「愛讓世界動起來」特優作品獎</span>
-      <span class="chip">2025 DFC 全球創意行動挑戰 全球 Top 20</span>
-      <span class="chip gold">2025 台灣青年海洋論壇 青少年組 第一名</span>
+      <span class="chip gold" data-i18n="project.awards.a1">2024 瑪利亞社會福利基金會「小學生公益行動」全國佳作</span>
+      <span class="chip gold" data-i18n="project.awards.a2">2024 金車教育基金會「愛讓世界動起來」全國優等獎</span>
+      <span class="chip gold" data-i18n="project.awards.a3">2024 第十屆荒野環境行動論壇全國賽 第一名（華語組）</span>
+      <span class="chip gold" data-i18n="project.awards.a4">2024 鴻海／聯發科「數位社會創新獎」能量獎</span>
+      <span class="chip" data-i18n="project.awards.a5">2024 環境部創意競賽 銀獎</span>
+      <span class="chip" data-i18n="project.awards.a6">2025 宜蘭幸福家全人協會「福氣公益獎」</span>
+      <span class="chip gold" data-i18n="project.awards.a7">2025 荒野環境行動論壇全國賽 第一名（英語組）</span>
+      <span class="chip" data-i18n="project.awards.a8">2025 金車教育基金會「愛讓世界動起來」特優作品獎</span>
+      <span class="chip" data-i18n="project.awards.a9">2025 DFC 全球創意行動挑戰 全球 Top 20</span>
+      <span class="chip gold" data-i18n="project.awards.a10">2025 台灣青年海洋論壇 青少年組 第一名</span>
       <span class="chip gold">2026 HundrED Youth Ambassador</span>
-      <span class="chip">2026 台新志工菁英獎 個人卓越獎 / 社會影響力獎</span>
+      <span class="chip" data-i18n="project.awards.a12">2026 台新志工菁英獎 個人卓越獎 / 社會影響力獎</span>
+    </div>
+    <div class="photo-grid" style="margin-top:28px;">
+      <figure><img src="assets/images/award_maria.jpg" alt="2024 瑪利亞社會福利基金會頒獎"><figcaption data-i18n="project.awards.a1">2024 瑪利亞社會福利基金會「小學生公益行動」全國佳作</figcaption></figure>
+      <figure><img src="assets/images/award_kingcar2024.jpg" alt="2024 金車教育基金會頒獎"><figcaption data-i18n="project.awards.a2">2024 金車教育基金會「愛讓世界動起來」全國優等獎</figcaption></figure>
+      <figure><img src="assets/images/award_sow2024.jpg" alt="2024 荒野環境行動論壇華語組頒獎"><figcaption data-i18n="project.awards.a3">2024 第十屆荒野環境行動論壇全國賽 第一名（華語組）</figcaption></figure>
+      <figure><img src="assets/images/award_mediatek.jpg" alt="2024 鴻海／聯發科數位社會創新獎頒獎"><figcaption data-i18n="project.awards.a4">2024 鴻海／聯發科「數位社會創新獎」能量獎</figcaption></figure>
+      <figure><img src="assets/images/award_cigbutt2024.jpg" alt="2024 環境部創意競賽頒獎"><figcaption data-i18n="project.awards.a5">2024 環境部創意競賽 銀獎</figcaption></figure>
+      <figure><img src="assets/images/award_sow2025en.jpg" alt="2025 荒野環境行動論壇英語組頒獎"><figcaption data-i18n="project.awards.a7">2025 荒野環境行動論壇全國賽 第一名（英語組）</figcaption></figure>
+      <figure><img src="assets/images/award_kingcar2025.jpg" alt="2025 金車教育基金會頒獎"><figcaption data-i18n="project.awards.a8">2025 金車教育基金會「愛讓世界動起來」特優作品獎</figcaption></figure>
+      <figure><img src="assets/images/award_dfc.jpg" alt="2025 DFC 全球創意行動挑戰"><figcaption data-i18n="project.awards.a9">2025 DFC 全球創意行動挑戰 全球 Top 20</figcaption></figure>
+      <figure><img src="assets/images/award_hundred.jpg" alt="2026 HundrED Youth Ambassador"><figcaption>2026 HundrED Youth Ambassador</figcaption></figure>
+      <figure><img src="assets/images/award_taishin.jpg" alt="2026 台新志工菁英獎頒獎"><figcaption data-i18n="project.awards.a12">2026 台新志工菁英獎 個人卓越獎 / 社會影響力獎</figcaption></figure>
     </div>
   </div>
 </section>
@@ -174,20 +307,20 @@
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">In the media</span>
-      <h2>媒體怎麼報導我們</h2>
+      <h2 data-i18n="project.media.title">媒體怎麼報導我們</h2>
     </div>
     <div class="two-col">
       <div>
-        <p>中央社、自由時報、Yahoo News、大小聲 Tai Sounds、少年報導者都報導過不落蒂聯盟的行動；我也曾登上公視《下課花路米》，遠赴北極進行三週的微塑膠科學考察。2026 年 2 月，日本《神戶新聞》《日本海新聞》報導了我們在兵庫縣新溫泉町的國際文化交流。</p>
-        <p>YouTube 頻道「不落蒂 No more butts」自 2024 年 1 月上線以來，累積 230 位訂閱者、150 部影片、超過 83,000 次觀看。</p>
+        <p data-i18n="project.media.p1">中央社、自由時報、Yahoo News、大小聲 Tai Sounds、少年報導者都報導過不落蒂聯盟的行動；我也曾登上公視《下課花路米》，遠赴北極進行三週的微塑膠科學考察。2026 年 2 月，日本《神戶新聞》《日本海新聞》報導了我們在兵庫縣新溫泉町的國際文化交流。</p>
+        <p data-i18n="project.media.p2">YouTube 頻道「不落蒂 No more butts」自 2024 年 1 月上線以來，累積 230 位訂閱者、150 部影片、超過 83,000 次觀看。</p>
       </div>
       <div class="chip-row" style="align-content:flex-start;">
-        <span class="chip">中央社：國家海洋政策白皮書發布</span>
-        <span class="chip">自由時報：不落蒂聯盟串聯多校學生</span>
-        <span class="chip">Yahoo News：用 APP 管理菸蒂問題</span>
-        <span class="chip">少年報導者：5 分鐘撿 100 根菸蒂的觀察</span>
-        <span class="chip">公視《下課花路米》：北極特輯</span>
-        <span class="chip">日本神戶新聞／日本海新聞：台日交流報導</span>
+        <span class="chip" data-i18n="project.media.m1">中央社：國家海洋政策白皮書發布</span>
+        <span class="chip" data-i18n="project.media.m2">自由時報：不落蒂聯盟串聯多校學生</span>
+        <span class="chip" data-i18n="project.media.m3">Yahoo News：用 APP 管理菸蒂問題</span>
+        <span class="chip" data-i18n="project.media.m4">少年報導者：5 分鐘撿 100 根菸蒂的觀察</span>
+        <span class="chip" data-i18n="project.media.m5">公視《下課花路米》：北極特輯</span>
+        <span class="chip" data-i18n="project.media.m6">日本神戶新聞／日本海新聞：台日交流報導</span>
       </div>
     </div>
   </div>
@@ -197,7 +330,7 @@
   <div class="wrap">
     <div>
       <div class="brand" style="color:#fff;">Hank Wu 吳昊翰</div>
-      <p style="margin:8px 0 0; max-width: 40ch;">不落蒂聯盟發起人・荒野少年・空手道選手</p>
+      <p style="margin:8px 0 0; max-width: 40ch;" data-i18n="footer.taglineShort">不落蒂聯盟發起人・荒野少年・空手道選手</p>
     </div>
     <div class="links">
       <a href="mailto:lostmow1014@gmail.com">Email</a>
@@ -210,5 +343,21 @@
   </div>
 </footer>
 
+<script>
+  var catBtns = document.querySelectorAll('.cat-btn');
+  var actionCards = document.querySelectorAll('.action-grid .card');
+  catBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      catBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var cat = btn.dataset.cat;
+      actionCards.forEach(function (card) {
+        var cats = (card.dataset.cat || '').split(' ');
+        card.hidden = cat !== 'all' && cats.indexOf(cat) === -1;
+      });
+    });
+  });
+</script>
+<script src="assets/i18n.js"></script>
 </body>
 </html>
