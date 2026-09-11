@@ -7,6 +7,7 @@ import type { ScreeningData, FilterState, SortState } from '../types';
 import { parseCSV } from '../utils/helpers';
 import FilterSortBar from './FilterSortBar';
 import PathPreview from './PathPreview';
+import RouteMap from './RouteMap';
 
 interface DashboardProps {
   userId: string;
@@ -417,6 +418,15 @@ const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
                  <AlertTriangle className="w-6 h-6 text-orange-300" />
              </div>
         </div>
+      </div>
+
+      <div className="px-4 mb-6 space-y-4">
+        <h3 className="font-bold text-slate-700 flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-emerald-600" />
+          路線分佈地圖
+        </h3>
+        <RouteMap title="快篩估計數量" data={filteredSortedData} valueField="screenedCount" />
+        <RouteMap title="實際撿拾數量" data={filteredSortedData} valueField="actualPickedCount" />
       </div>
 
       <div className="px-4 mb-6">

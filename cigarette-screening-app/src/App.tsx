@@ -34,7 +34,10 @@ export default function App() {
                <ClipboardList className="w-5 h-5 text-white" />
              )}
           </div>
-          <h1 className="font-bold text-slate-800">菸蒂快篩</h1>
+          <div>
+            <h1 className="font-bold text-slate-800">菸蒂快篩</h1>
+            <a href="../index.html" className="text-[10px] text-slate-400 hover:text-emerald-600">← 回個人網站</a>
+          </div>
         </div>
 
         <div className="flex bg-slate-100 p-1 rounded-lg">

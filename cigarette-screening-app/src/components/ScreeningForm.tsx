@@ -177,6 +177,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          if (mapRef.current !== map) return;
           const { latitude, longitude } = pos.coords;
           map.setView([latitude, longitude], 17);
           L.marker([latitude, longitude]).addTo(map).bindPopup('目前位置');
@@ -188,7 +189,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
 
     return () => {
       map.remove();
-      mapRef.current = null;
+      if (mapRef.current === map) mapRef.current = null;
     };
   }, []);
 
