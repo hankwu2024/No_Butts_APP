@@ -79,6 +79,89 @@ a:hover { text-decoration: underline; }
   display: inline-block;
 }
 
+/* ---------- Action map cards (clickable detail) ---------- */
+.action-card {
+  cursor: pointer;
+  position: relative;
+}
+
+.action-card:hover,
+.action-card:focus-visible {
+  outline: none;
+  border-color: var(--green-500);
+}
+
+.action-card[data-photo]::after {
+  content: "📷";
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 0.9rem;
+  opacity: 0.55;
+}
+
+.action-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.action-modal[hidden] { display: none; }
+
+.action-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 28, 22, 0.6);
+}
+
+.action-modal-panel {
+  position: relative;
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+
+.action-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.action-modal-media {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--green-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.action-modal-media img { width: 100%; height: 100%; object-fit: cover; }
+.action-modal-icon { font-size: 3rem; }
+
+.action-modal-panel h3 { margin: 0 0 10px; color: var(--green-900); font-size: 1.2rem; }
+.action-modal-panel p { margin: 0; color: #55634e; }
+
 .nav-links {
   display: flex;
   gap: 6px;
