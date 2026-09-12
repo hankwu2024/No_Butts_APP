@@ -67,10 +67,15 @@ a:hover { text-decoration: underline; }
   color: var(--green-900);
 }
 
-.brand .dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--orange);
+.brand-logo {
+  height: 26px;
+  width: auto;
+  display: inline-block;
+}
+
+.eyebrow-logo {
+  height: 20px;
+  width: auto;
   display: inline-block;
 }
 
