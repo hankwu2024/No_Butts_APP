@@ -437,6 +437,61 @@ section.alt { background: var(--green-100); }
 
 .action-grid .card[hidden] { display: none; }
 
+/* ---------- SOW feature photo ---------- */
+.sow-feature {
+  max-width: 420px;
+  margin: 36px auto 0;
+  text-align: center;
+}
+
+.sow-feature img {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.sow-feature figcaption {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #6b7864;
+  font-weight: 600;
+}
+
+/* ---------- Full activity log (compact clickable timeline) ---------- */
+.full-log {
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.full-log .tl-item {
+  margin-bottom: 22px;
+  padding: 6px 10px 6px 4px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.full-log .tl-item.action-card {
+  cursor: pointer;
+}
+
+.full-log .tl-item.action-card:hover,
+.full-log .tl-item.action-card:focus-visible {
+  background: var(--green-100);
+  outline: none;
+}
+
+.full-log .tl-item[data-photo] h4::after {
+  content: "📷";
+  font-size: 0.75rem;
+  margin-left: 8px;
+  opacity: 0.6;
+}
+
+.full-log .tl-item.no-photo {
+  opacity: 0.85;
+}
+
 /* ---------- Badges / chips ---------- */
 .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
 
