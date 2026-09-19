@@ -814,3 +814,20 @@ footer .copyright { width: 100%; margin-top: 20px; color: #7fa189; font-size: 0.
   margin: 2px 0 6px 16px;
 }
 .full-log .tl-item.action-card { display: flow-root; }
+
+/* ---------- Youth network: grouped by country ---------- */
+.country-nav { margin-bottom: 36px; }
+.country-nav .chip { text-decoration: none; }
+.country-block { margin-bottom: 44px; scroll-margin-top: 90px; }
+.country-block h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--green-100);
+  color: var(--green-900);
+  font-size: 1.25rem;
+}
+.country-flag { font-size: 1.5rem; line-height: 1; }
+.country-block .timeline { margin-bottom: 0; }
