@@ -157,6 +157,8 @@ a:hover { text-decoration: underline; }
 }
 
 .action-modal-media img { width: 100%; height: 100%; object-fit: cover; }
+.action-modal-media.multi { aspect-ratio: auto; flex-direction: column; gap: 8px; background: none; overflow: visible; }
+.action-modal-media.multi img { height: auto; aspect-ratio: 4/3; border-radius: 14px; }
 .action-modal-icon { font-size: 3rem; }
 
 .action-modal-panel h3 { margin: 0 0 10px; color: var(--green-900); font-size: 1.2rem; }
@@ -771,3 +773,6 @@ footer .copyright { width: 100%; margin-top: 20px; color: #7fa189; font-size: 0.
   .nav-links { overflow-x: auto; width: 100%; justify-content: center; }
   .lang-switch { margin-left: 0; }
 }
+
+.full-log.net-log { max-height: none; overflow-y: visible; }
+.full-log .action-card[data-photo]::after { content: none; }
