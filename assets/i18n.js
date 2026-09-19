@@ -5,6 +5,8 @@
     en: {
       'nav.home': 'Home',
       'nav.project': 'No Butts Alliance',
+      'nav.squads': 'Squads',
+      'squads.hero.eyebrow': '🚩 The No Butts Alliance squads',
       'nav.interests': 'Interests',
       'nav.about': 'About Me',
       'footer.tagline': 'Founder of the No Butts Alliance · Wilderness kid · Karate athlete<br>Turning a cigarette-butt-sized action into something the world can see.',
@@ -440,6 +442,8 @@
     ja: {
       'nav.home': 'ホーム',
       'nav.project': '不落蒂聯盟',
+      'nav.squads': '分隊',
+      'squads.hero.eyebrow': '🚩 不落蒂聯盟の分隊',
       'nav.interests': '趣味・特技',
       'nav.about': '自己紹介',
       'footer.tagline': '不落蒂聯盟創設者・荒野少年・空手選手<br>タバコの吸い殻ほどの小さな行動で、世界に見える変化を起こす。',

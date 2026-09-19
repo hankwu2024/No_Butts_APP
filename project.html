@@ -11,10 +11,11 @@
 
 <nav class="site-nav">
   <div class="wrap">
-    <div class="brand"><img class="brand-logo" src="assets/images/logo_no_butts.png" alt="不落蒂聯盟標誌">Hank Wu 吳昊翰</div>
+    <div class="brand"><img class="brand-logo" src="assets/images/logo_hank.png" alt="Hank 標誌">Hank Wu 吳昊翰</div>
     <div class="nav-links">
       <a href="index.html" data-i18n="nav.home">首頁</a>
       <a href="project.html" class="active" data-i18n="nav.project">不落蒂聯盟</a>
+      <a href="squads.html" data-i18n="nav.squads">分隊</a>
       <a href="interests.html" data-i18n="nav.interests">興趣愛好</a>
       <a href="about.html" data-i18n="nav.about">關於我</a>
     </div>
@@ -37,7 +38,7 @@
       </div>
     </div>
     <div class="hero-photo">
-      <img src="assets/images/team.jpg" alt="不落蒂聯盟隊員合照，穿著印有 No Butts Alliance 不落蒂字樣的隊服">
+      <img src="assets/images/team_members.jpg" alt="不落蒂聯盟隊員與夥伴在街頭合照，旁邊是用菸蒂堆成的白熊">
       <span class="tag">不落蒂聯盟隊員</span>
     </div>
   </div>
@@ -352,38 +353,6 @@
         <h4 data-i18n="project.net.in1.title">短影音工作坊之印度交流</h4>
         <p data-i18n="project.net.in1.desc">印度的夥伴來參加我們舉辦的短影音工作坊，在現場交流。</p>
       </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="alt">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="kicker">Squads</span>
-      <h2 data-i18n="project.squads.title">我們的分隊</h2>
-      <p data-i18n="project.squads.lead">不落蒂聯盟不只在三重，各地夥伴也陸續組成了自己的分隊，一起把行動帶到更多地方。</p>
-    </div>
-    <div class="card-grid">
-      <div class="card">
-        <div class="icon">🏠</div>
-        <h3 data-i18n="project.squads.sanchong.title">三重分隊</h3>
-        <p data-i18n="project.squads.sanchong.desc">不落蒂聯盟的發源小隊，也是行動的大本營。</p>
-      </div>
-      <div class="card action-card" data-photo="assets/images/net_ca_scienceworld.jpg|assets/images/net_ca_library.jpg" tabindex="0" role="button">
-        <div class="icon">🇨🇦</div>
-        <h3 data-i18n="project.squads.canada.title">加拿大分隊</h3>
-        <p data-i18n="project.squads.canada.desc">與加拿大夥伴長期交流、共學的海外分隊。</p>
-      </div>
-      <div class="card">
-        <div class="icon">🏫</div>
-        <h3 data-i18n="project.squads.chenggong.title">成功（高中）分隊</h3>
-        <p data-i18n="project.squads.chenggong.desc">在成功高中組成的行動小隊。</p>
-      </div>
-      <div class="card action-card" data-photo="assets/images/net_japan_squad.jpg" tabindex="0" role="button">
-        <div class="icon">🇯🇵</div>
-        <h3 data-i18n="project.squads.japan.title">日本分隊</h3>
-        <p data-i18n="project.squads.japan.desc">與日本新溫泉町夢丘中學交流合作的海外分隊。</p>
       </div>
     </div>
   </div>
@@ -875,61 +844,8 @@
       });
     });
   });
-
-  document.querySelectorAll('.action-card[data-photo]').forEach(function (card) {
-    var photos = card.dataset.photo.split('|');
-    var wrap = document.createElement('span');
-    wrap.className = 'card-thumb';
-    var img = document.createElement('img');
-    img.loading = 'lazy';
-    img.alt = '';
-    img.src = photos[0].replace('assets/images/', 'assets/images/thumbs/').replace(/\.\w+$/, '.jpg');
-    wrap.appendChild(img);
-    if (photos.length > 1) {
-      var badge = document.createElement('span');
-      badge.className = 'card-thumb-count';
-      badge.textContent = '+' + (photos.length - 1);
-      wrap.appendChild(badge);
-    }
-    card.insertBefore(wrap, card.firstChild);
-  });
-
-  var actionModal = document.getElementById('action-modal');
-  var actionModalMedia = document.getElementById('action-modal-media');
-  var actionModalTitle = document.getElementById('action-modal-title');
-  var actionModalDesc = document.getElementById('action-modal-desc');
-
-  function openActionModal(card) {
-    var titleEl = card.querySelector('h3, h4');
-    var descEl = card.querySelector('p');
-    var title = titleEl ? titleEl.innerHTML : '';
-    var desc = descEl ? descEl.innerHTML : '';
-    var icon = card.querySelector('.icon') ? card.querySelector('.icon').textContent : '📌';
-    var photo = card.dataset.photo;
-    actionModalTitle.innerHTML = title;
-    actionModalDesc.innerHTML = desc;
-    var photos = photo ? photo.split('|') : [];
-    actionModalMedia.classList.toggle('multi', photos.length > 1);
-    actionModalMedia.innerHTML = photos.length
-      ? photos.map(function (src) { return '<img src="' + src + '" alt="">'; }).join('')
-      : '<span class="action-modal-icon">' + icon + '</span>';
-    actionModal.hidden = false;
-    document.body.style.overflow = 'hidden';
-  }
-  function closeActionModal() {
-    actionModal.hidden = true;
-    document.body.style.overflow = '';
-  }
-  document.querySelectorAll('.action-card').forEach(function (card) {
-    card.addEventListener('click', function () { openActionModal(card); });
-    card.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openActionModal(card); }
-    });
-  });
-  actionModal.querySelector('.action-modal-backdrop').addEventListener('click', closeActionModal);
-  actionModal.querySelector('.action-modal-close').addEventListener('click', closeActionModal);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !actionModal.hidden) closeActionModal(); });
 </script>
+<script src="assets/cards.js"></script>
 <script src="assets/i18n.js"></script>
 </body>
 </html>
