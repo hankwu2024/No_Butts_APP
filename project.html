@@ -804,6 +804,24 @@
     });
   });
 
+  document.querySelectorAll('.action-card[data-photo]').forEach(function (card) {
+    var photos = card.dataset.photo.split('|');
+    var wrap = document.createElement('span');
+    wrap.className = 'card-thumb';
+    var img = document.createElement('img');
+    img.loading = 'lazy';
+    img.alt = '';
+    img.src = photos[0].replace('assets/images/', 'assets/images/thumbs/').replace(/\.\w+$/, '.jpg');
+    wrap.appendChild(img);
+    if (photos.length > 1) {
+      var badge = document.createElement('span');
+      badge.className = 'card-thumb-count';
+      badge.textContent = '+' + (photos.length - 1);
+      wrap.appendChild(badge);
+    }
+    card.insertBefore(wrap, card.firstChild);
+  });
+
   var actionModal = document.getElementById('action-modal');
   var actionModalMedia = document.getElementById('action-modal-media');
   var actionModalTitle = document.getElementById('action-modal-title');
