@@ -257,6 +257,9 @@
       'project.net.country.es': 'Spain',
       'project.net.country.jp': 'Japan',
       'project.net.country.in': 'India',
+      'project.log.n9.date': '2026.09.17',
+      'project.log.n9.title': 'Ming Chi University of Technology USR Sustainability Forum (on river-borne waste)',
+      'project.log.n9.desc': 'Discussed river-borne waste (“chuan-fei”) at the USR Environmental Sustainability Forum at Ming Chi University of Technology; our slides also introduced the cigarette-butt screening app.',
       'project.squads.title': 'Our Squads',
       'project.squads.lead': 'The No Butts Alliance isn’t just in Sanchong anymore — partners elsewhere have formed their own squads to carry the action further.',
       'project.squads.sanchong.title': 'Sanchong Squad',
@@ -679,6 +682,9 @@
       'project.net.country.es': 'スペイン',
       'project.net.country.jp': '日本',
       'project.net.country.in': 'インド',
+      'project.log.n9.date': '2026.09.17',
+      'project.log.n9.title': '明志科技大学USR環境サステナビリティフォーラム（河川ごみをテーマに）',
+      'project.log.n9.desc': '明志科技大学のUSR環境サステナビリティフォーラムで河川ごみ（「川廢」）について議論し、発表では吸い殻スクリーニングアプリも紹介した。',
       'project.squads.title': '私たちの分隊',
       'project.squads.lead': '不落蒂聯盟は三重だけでなく、各地の仲間たちも自分たちの分隊を結成し、活動をより多くの場所へ広げています。',
       'project.squads.sanchong.title': '三重分隊',
@@ -847,6 +853,81 @@
     }
   };
 
+  // Snapshot of the built-in translations, plus the text overrides that the
+  // web editor (edit.html) publishes to content.json.
+  var BASE = JSON.parse(JSON.stringify(T));
+  window.SITE_I18N_BASE = BASE;
+  window.SITE_PUBLISHED = { zh: {}, en: {}, ja: {} };
+  window.SITE_OVERRIDES = { zh: {}, en: {}, ja: {} };
+  var DRAFT_KEY = 'siteContentDraft';
+
+  function mergeOverrides(o) {
+    ['zh', 'en', 'ja'].forEach(function (l) {
+      if (o && o[l] && typeof o[l] === 'object') Object.assign(window.SITE_OVERRIDES[l], o[l]);
+    });
+  }
+
+  function readDraft() {
+    try {
+      var d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+      if (d && ['zh', 'en', 'ja'].some(function (l) { return d[l] && Object.keys(d[l]).length; })) return d;
+    } catch (e) {}
+    return null;
+  }
+
+  function showDraftBanner() {
+    if (document.getElementById('draft-banner') || /edit\.html$/.test(location.pathname)) return;
+    var bar = document.createElement('div');
+    bar.id = 'draft-banner';
+    bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:200;background:#7a4a00;color:#fff;padding:8px 16px;font-size:.85rem;text-align:center;';
+    bar.appendChild(document.createTextNode('草稿預覽中（只有這個瀏覽器看得到，尚未發布）　'));
+    var a = document.createElement('a');
+    a.href = 'edit.html';
+    a.textContent = '回到編輯區';
+    a.style.cssText = 'color:#fff;font-weight:700;margin-right:12px;';
+    bar.appendChild(a);
+    var b = document.createElement('a');
+    b.href = '#';
+    b.textContent = '清除草稿';
+    b.style.cssText = 'color:#ffd9a0;font-weight:700;';
+    b.addEventListener('click', function (e) {
+      e.preventDefault();
+      try { localStorage.removeItem(DRAFT_KEY); } catch (x) {}
+      location.reload();
+    });
+    bar.appendChild(b);
+    document.body.appendChild(bar);
+  }
+
+  function applyOverrides() {
+    var O = window.SITE_OVERRIDES;
+    ['en', 'ja'].forEach(function (l) {
+      Object.keys(O[l]).forEach(function (k) { T[l][k] = O[l][k]; });
+    });
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (O.zh[k] !== undefined) {
+        el.innerHTML = O.zh[k];
+        el.setAttribute('data-i18n-zh-orig', O.zh[k]);
+      }
+    });
+  }
+
+  function loadOverrides() {
+    return fetch('content.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (o) {
+        if (o) {
+          ['zh', 'en', 'ja'].forEach(function (l) { window.SITE_PUBLISHED[l] = (o[l] && typeof o[l] === 'object') ? o[l] : {}; });
+        }
+        mergeOverrides(window.SITE_PUBLISHED);
+        var d = readDraft();
+        if (d) { mergeOverrides(d); showDraftBanner(); }
+        applyOverrides();
+      });
+  }
+
   function getStored() {
     try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; }
   }
@@ -891,5 +972,6 @@
       btn.addEventListener('click', function () { applyLanguage(btn.dataset.lang); });
     });
     applyLanguage(getStored() || 'zh');
+    window.SITE_READY = loadOverrides().then(function () { applyLanguage(getStored() || 'zh'); });
   });
 })();

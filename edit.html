@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>內容編輯區 | Hank Wu</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .editor { padding: 40px 0 120px; }
+  .editor h1 { margin: 0 0 8px; color: var(--green-900); font-size: 1.7rem; }
+  .editor .muted { color: #55634e; font-size: .92rem; }
+  .gate { max-width: 420px; margin: 40px auto; }
+  .gate input, .toolbar input, .toolbar select, .settings input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+    font: inherit; background: #fff; color: var(--ink);
+  }
+  .btn {
+    display: inline-block; padding: 10px 18px; border-radius: 999px; border: 0; cursor: pointer;
+    background: var(--green-700); color: #fff; font: inherit; font-weight: 700;
+  }
+  .btn.ghost { background: #fff; color: var(--green-700); border: 1px solid var(--line); }
+  .btn.warn { background: #b4501e; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .msg { margin-top: 12px; font-size: .92rem; min-height: 1.2em; }
+  .msg.err { color: #b3261e; }
+  .msg.ok { color: var(--green-700); }
+  .toolbar { display: grid; grid-template-columns: 200px 1fr auto; gap: 12px; align-items: center; margin: 24px 0 14px; }
+  .toolbar label { display: flex; gap: 6px; align-items: center; white-space: nowrap; font-size: .9rem; }
+  .toolbar label input { width: auto; }
+  .row { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+  .row.changed { border-color: #eecf8f; background: #fffaf0; }
+  .row-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; font-size: .8rem; color: #55634e; }
+  .row-head code { background: var(--green-100); padding: 2px 8px; border-radius: 8px; word-break: break-all; }
+  .row-head button { margin-left: auto; background: none; border: 0; color: var(--green-700); cursor: pointer; font: inherit; text-decoration: underline; }
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .cols label { display: block; font-size: .75rem; font-weight: 700; color: var(--green-700); margin-bottom: 3px; }
+  .cols textarea {
+    width: 100%; min-height: 64px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px;
+    font: inherit; font-size: .92rem; resize: vertical; background: #fff; color: var(--ink);
+  }
+  .savebar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #fff; border-top: 1px solid var(--line);
+    padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;
+  }
+  .savebar .stat { font-size: .88rem; color: #55634e; margin-right: auto; }
+  details.settings { margin: 0 0 18px; }
+  details.settings summary { cursor: pointer; font-weight: 700; color: var(--green-900); }
+  .settings .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .settings label.f { display: block; font-size: .8rem; font-weight: 700; color: var(--green-700); margin-bottom: 3px; }
+  .preview-links a { margin-right: 14px; font-weight: 700; }
+  @media (max-width: 760px) {
+    .toolbar { grid-template-columns: 1fr; }
+    .cols, .settings .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <div class="brand"><img class="brand-logo" src="assets/images/logo_no_butts.png" alt="">Hank Wu 吳昊翰</div>
+    <div class="nav-links"><a href="index.html">回首頁</a></div>
+  </div>
+</nav>
+
+<main class="wrap editor">
+
+  <section id="gate" class="card gate">
+    <h1>內容編輯區</h1>
+    <p class="muted">請輸入密碼。</p>
+    <form id="gate-form" autocomplete="off">
+      <input type="password" id="pw" placeholder="密碼" autocomplete="current-password" required>
+      <p><button class="btn" type="submit">進入</button></p>
+    </form>
+    <div class="msg" id="gate-msg"></div>
+  </section>
+
+  <section id="app" hidden>
+    <h1>內容編輯區</h1>
+    <p class="muted">修改網站上的文字（中文、英文、日文）。改動會先存成「草稿」，只有這個瀏覽器看得到；按「發布到網站」才會讓所有人看到。照片、版面和新增／刪除行動不在這裡改。</p>
+
+    <details class="settings card" style="margin-top:18px;">
+      <summary>發布設定（第一次發布前要填）</summary>
+      <p class="muted">發布需要一組 GitHub 權杖（Fine-grained personal access token），權限只要對這個 repo 開「Contents：Read and write」。權杖只存在你的瀏覽器，不會寫進網站。</p>
+      <div class="grid">
+        <div><label class="f" for="cfg-token">GitHub 權杖</label><input id="cfg-token" type="password" autocomplete="off" placeholder="github_pat_..."></div>
+        <div><label class="f" for="cfg-repo">Repo</label><input id="cfg-repo" value="hankwu2024/No_Butts_APP"></div>
+        <div><label class="f" for="cfg-branch">分支</label><input id="cfg-branch" value="gh-pages"></div>
+        <div><label class="f" for="cfg-path">檔案路徑</label><input id="cfg-path" value="content.json"></div>
+      </div>
+      <p><label><input type="checkbox" id="cfg-remember"> 記住在這個瀏覽器（共用電腦請不要勾）</label></p>
+    </details>
+
+    <div class="toolbar">
+      <select id="f-page">
+        <option value="">全部頁面</option>
+        <option value="index.html">首頁</option>
+        <option value="project.html">不落蒂聯盟</option>
+        <option value="interests.html">興趣愛好</option>
+        <option value="about.html">關於我</option>
+      </select>
+      <input id="f-search" type="search" placeholder="搜尋文字或代號，例如：Alice、獎、project.log.t5">
+      <label><input type="checkbox" id="f-changed"> 只看已修改</label>
+    </div>
+    <p class="muted preview-links">預覽草稿：
+      <a href="index.html" target="_blank" rel="noopener">首頁</a>
+      <a href="project.html" target="_blank" rel="noopener">不落蒂聯盟</a>
+      <a href="interests.html" target="_blank" rel="noopener">興趣愛好</a>
+      <a href="about.html" target="_blank" rel="noopener">關於我</a>
+    </p>
+
+    <div id="list"></div>
+    <p><button class="btn ghost" id="more" hidden>顯示更多</button></p>
+    <div class="msg" id="list-msg"></div>
+  </section>
+</main>
+
+<div class="savebar" id="savebar" hidden>
+  <span class="stat" id="stat"></span>
+  <button class="btn ghost" id="btn-discard" type="button">捨棄所有草稿</button>
+  <button class="btn" id="btn-publish" type="button">發布到網站</button>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script>
+(function () {
+  // Sha-256 of "nbedit:" + password. The password itself is never stored in the site.
+  var PW_HASH = 'b353855656464a72dcb25dedd954d4748f396a3a553f4097711a2734fe1be08f';
+  var PAGES = ['index.html', 'project.html', 'interests.html', 'about.html'];
+  var PAGE_NAMES = { 'index.html': '首頁', 'project.html': '不落蒂聯盟', 'interests.html': '興趣愛好', 'about.html': '關於我' };
+  var DRAFT_KEY = 'siteContentDraft';
+  var CFG_KEY = 'siteEditorConfig';
+  var LANGS = [['zh', '中文'], ['en', 'English'], ['ja', '日本語']];
+  var PAGE_SIZE = 40;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var items = [];            // {key, page, zh}
+  var desired = { zh: {}, en: {}, ja: {} };   // overrides we would publish
+  var published = { zh: {}, en: {}, ja: {} };
+  var shown = 0;
+  var filtered = [];
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function setMsg(el, text, cls) { el.textContent = text; el.className = 'msg' + (cls ? ' ' + cls : ''); }
+
+  async function sha256(s) {
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  // ---------- gate ----------
+  $('gate-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!window.crypto || !crypto.subtle) { setMsg($('gate-msg'), '這個瀏覽器不支援密碼驗證，請改用 https 網址開啟。', 'err'); return; }
+    var h = await sha256('nbedit:' + $('pw').value);
+    if (h === PW_HASH) {
+      try { sessionStorage.setItem('nbEditOk', '1'); } catch (x) {}
+      unlock();
+    } else {
+      $('pw').value = '';
+      setMsg($('gate-msg'), '密碼不對。', 'err');
+    }
+  });
+
+  function unlock() {
+    $('gate').hidden = true;
+    $('app').hidden = false;
+    $('savebar').hidden = false;
+    init();
+  }
+
+  // ---------- data ----------
+  function changedKeys() {
+    var n = 0, seen = {};
+    LANGS.forEach(function (l) {
+      var k;
+      for (k in desired[l[0]]) if (JSON.stringify(desired[l[0]][k]) !== JSON.stringify(published[l[0]][k])) seen[k] = 1;
+      for (k in published[l[0]]) if (desired[l[0]][k] === undefined) seen[k] = 1;
+    });
+    for (var x in seen) n++;
+    return { n: n, set: seen };
+  }
+
+  function baseValue(lang, key, item) {
+    if (lang === 'zh') return item.zh;
+    var b = window.SITE_I18N_BASE && window.SITE_I18N_BASE[lang];
+    return b && b[key] !== undefined ? b[key] : '';
+  }
+  function currentValue(lang, key, item) {
+    var o = desired[lang][key];
+    return o !== undefined ? o : baseValue(lang, key, item);
+  }
+
+  function saveDraft() {
+    try {
+      var c = changedKeys();
+      if (c.n === 0) localStorage.removeItem(DRAFT_KEY);
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify(desired));
+    } catch (e) {}
+    updateStat();
+  }
+
+  function updateStat() {
+    var c = changedKeys();
+    $('stat').textContent = c.n ? ('有 ' + c.n + ' 處尚未發布的修改（已存成草稿）') : '目前沒有未發布的修改';
+    $('btn-publish').disabled = c.n === 0;
+    $('btn-discard').disabled = c.n === 0;
+  }
+
+  async function loadItems() {
+    var byKey = {};
+    for (var i = 0; i < PAGES.length; i++) {
+      var page = PAGES[i];
+      var res = await fetch(page, { cache: 'no-store' });
+      if (!res.ok) throw new Error('讀不到 ' + page);
+      var doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      doc.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var k = el.getAttribute('data-i18n');
+        if (!byKey[k]) byKey[k] = { key: k, page: page, zh: el.innerHTML };
+      });
+    }
+    return Object.keys(byKey).map(function (k) { return byKey[k]; });
+  }
+
+  async function init() {
+    if (init.done) return; init.done = true;
+    try { if (window.SITE_READY) await window.SITE_READY; } catch (e) {}
+    published = clone(window.SITE_PUBLISHED || { zh: {}, en: {}, ja: {} });
+    desired = clone(published);
+    try {
+      var d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+      if (d) LANGS.forEach(function (l) { if (d[l[0]]) desired[l[0]] = d[l[0]]; });
+    } catch (e) {}
+    try {
+      var cfg = JSON.parse(localStorage.getItem(CFG_KEY) || 'null');
+      if (cfg) {
+        $('cfg-token').value = cfg.token || ''; $('cfg-repo').value = cfg.repo || $('cfg-repo').value;
+        $('cfg-branch').value = cfg.branch || $('cfg-branch').value; $('cfg-path').value = cfg.path || $('cfg-path').value;
+        $('cfg-remember').checked = !!cfg.token;
+      }
+    } catch (e) {}
+    try {
+      items = await loadItems();
+    } catch (e) {
+      setMsg($('list-msg'), '讀取頁面失敗：' + e.message + '（請用網站網址開啟，不要直接開檔案）', 'err');
+      return;
+    }
+    // keep the order pages/keys appear in; hide purely decorative empty keys
+    updateStat();
+    render(true);
+  }
+
+  // ---------- list ----------
+  function matches(item, q, page, onlyChanged, changedSet) {
+    if (page && item.page !== page) return false;
+    if (onlyChanged && !changedSet[item.key]) return false;
+    if (!q) return true;
+    q = q.toLowerCase();
+    if (item.key.toLowerCase().indexOf(q) !== -1) return true;
+    return LANGS.some(function (l) { return String(currentValue(l[0], item.key, item)).toLowerCase().indexOf(q) !== -1; });
+  }
+
+  function render(reset) {
+    if (reset) {
+      var c = changedKeys();
+      filtered = items.filter(function (it) { return matches(it, $('f-search').value.trim(), $('f-page').value, $('f-changed').checked, c.set); });
+      $('list').textContent = '';
+      shown = 0;
+    }
+    var end = Math.min(filtered.length, shown + PAGE_SIZE);
+    for (; shown < end; shown++) $('list').appendChild(buildRow(filtered[shown]));
+    $('more').hidden = shown >= filtered.length;
+    setMsg($('list-msg'), filtered.length ? ('共 ' + filtered.length + ' 筆，已顯示 ' + shown + ' 筆') : '沒有符合的內容。');
+  }
+
+  function isChanged(key) { return !!changedKeys().set[key]; }
+
+  function buildRow(item) {
+    var row = document.createElement('div');
+    row.className = 'row';
+    var head = document.createElement('div');
+    head.className = 'row-head';
+    var pg = document.createElement('span'); pg.textContent = PAGE_NAMES[item.page] || item.page;
+    var code = document.createElement('code'); code.textContent = item.key;
+    var reset = document.createElement('button'); reset.type = 'button'; reset.textContent = '還原成原本的文字';
+    head.appendChild(pg); head.appendChild(code); head.appendChild(reset);
+    var cols = document.createElement('div'); cols.className = 'cols';
+    var areas = {};
+    LANGS.forEach(function (l) {
+      var wrap = document.createElement('div');
+      var lab = document.createElement('label'); lab.textContent = l[1];
+      var ta = document.createElement('textarea');
+      ta.value = currentValue(l[0], item.key, item);
+      ta.rows = Math.min(8, Math.max(2, Math.ceil(ta.value.length / 34)));
+      ta.addEventListener('input', function () {
+        var base = baseValue(l[0], item.key, item);
+        if (ta.value === base) delete desired[l[0]][item.key];
+        else desired[l[0]][item.key] = ta.value;
+        row.classList.toggle('changed', isChanged(item.key));
+        saveDraft();
+      });
+      areas[l[0]] = ta;
+      wrap.appendChild(lab); wrap.appendChild(ta); cols.appendChild(wrap);
+    });
+    reset.addEventListener('click', function () {
+      LANGS.forEach(function (l) {
+        delete desired[l[0]][item.key];
+        areas[l[0]].value = baseValue(l[0], item.key, item);
+      });
+      row.classList.toggle('changed', isChanged(item.key));
+      saveDraft();
+    });
+    row.appendChild(head); row.appendChild(cols);
+    row.classList.toggle('changed', isChanged(item.key));
+    return row;
+  }
+
+  var t;
+  $('f-search').addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { render(true); }, 200); });
+  $('f-page').addEventListener('change', function () { render(true); });
+  $('f-changed').addEventListener('change', function () { render(true); });
+  $('more').addEventListener('click', function () { render(false); });
+
+  $('btn-discard').addEventListener('click', function () {
+    if (!confirm('捨棄所有還沒發布的修改？')) return;
+    desired = clone(published);
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    updateStat();
+    render(true);
+  });
+
+  // ---------- publish ----------
+  function b64utf8(str) {
+    var bytes = new TextEncoder().encode(str), bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+  function sorted(o) {
+    var out = {};
+    Object.keys(o).sort().forEach(function (k) { out[k] = o[k]; });
+    return out;
+  }
+
+  $('btn-publish').addEventListener('click', async function () {
+    var token = $('cfg-token').value.trim();
+    var repo = $('cfg-repo').value.trim(), branch = $('cfg-branch').value.trim(), path = $('cfg-path').value.trim();
+    if (!token) {
+      document.querySelector('details.settings').open = true;
+      setMsg($('list-msg'), '請先在「發布設定」貼上 GitHub 權杖。', 'err');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    try {
+      if ($('cfg-remember').checked) localStorage.setItem(CFG_KEY, JSON.stringify({ token: token, repo: repo, branch: branch, path: path }));
+      else localStorage.setItem(CFG_KEY, JSON.stringify({ repo: repo, branch: branch, path: path }));
+    } catch (e) {}
+    var btn = $('btn-publish'); btn.disabled = true;
+    setMsg($('list-msg'), '發布中…');
+    try {
+      var api = 'https://api.github.com/repos/' + repo + '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+      var headers = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+      var sha;
+      var g = await fetch(api + '?ref=' + encodeURIComponent(branch), { headers: headers, cache: 'no-store' });
+      if (g.ok) sha = (await g.json()).sha;
+      else if (g.status !== 404) throw new Error('讀取現有檔案失敗（' + g.status + '），請確認權杖與 repo 設定。');
+      var out = { zh: sorted(desired.zh), en: sorted(desired.en), ja: sorted(desired.ja) };
+      var body = { message: 'Update site content via web editor', content: b64utf8(JSON.stringify(out, null, 2) + '\n'), branch: branch };
+      if (sha) body.sha = sha;
+      var p = await fetch(api, { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, headers), body: JSON.stringify(body) });
+      if (!p.ok) {
+        var detail = ''; try { detail = (await p.json()).message; } catch (e) {}
+        throw new Error('發布失敗（' + p.status + '）' + (detail ? '：' + detail : ''));
+      }
+      published = clone(desired);
+      try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+      updateStat();
+      render(true);
+      setMsg($('list-msg'), '已發布！GitHub Pages 大約 1–2 分鐘後會顯示新內容。', 'ok');
+    } catch (e) {
+      setMsg($('list-msg'), e.message, 'err');
+    } finally {
+      updateStat();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    try { if (sessionStorage.getItem('nbEditOk') === '1') unlock(); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
