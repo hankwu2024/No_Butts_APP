@@ -133,7 +133,7 @@
       role: { zh: '🥋 空手道', en: '🥋 Karate', ja: '🥋 空手' },
       title: { zh: '不只是練習，更是一次次站上擂台', en: 'Not just practice — stepping into the ring again and again', ja: '練習だけでなく、何度もリングに立ってきた' },
       desc: { zh: '我拿過好幾面空手道金牌，但比起獎牌，我更喜歡比賽教我的事：怎麼在壓力下保持專注、怎麼在輸掉之後重新站起來。這些練習出來的韌性，也是我後來能帶領不落蒂聯盟走過低潮的原因。', en: "I've won several karate gold medals, but more than the medals, I love what competing has taught me: staying focused under pressure, and getting back up after a loss. That resilience is also why I've been able to lead the No Butts Alliance through hard times.", ja: '空手でいくつも金メダルを獲得しましたが、メダルより好きなのは試合が教えてくれたこと——プレッシャーの中で集中力を保つこと、負けた後にまた立ち上がることです。この試合で鍛えた粘り強さが、後に不落蒂聯盟を低迷期から導けた理由でもあります。' } },
-    sailing: { icon: '⛵', img: 'assets/images/speaking.jpg',
+    sailing: { icon: '⛵', img: 'assets/images/sailing.jpg', pos: '72% center',
       role: { zh: '⛵ 帆船', en: '⛵ Sailing', ja: '⛵ セーリング' },
       title: { zh: '帆船選手', en: 'Competitive sailor', ja: 'セーリング選手' },
       desc: { zh: '我是宜蘭帆船隊的選手，長期接受帆船訓練與比賽。這種對海洋的親近感，也讓我更在意菸蒂如何汙染水源這件事。', en: 'I sail competitively with the Yilan Sailing Team, training and racing long-term. That closeness to the ocean is part of why I care so much about how cigarette butts pollute our waters.', ja: '宜蘭セーリングチームの選手として、長期的にトレーニングと大会に参加しています。海への親しみが、タバコの吸い殻が水源を汚染することへの関心にもつながっています。' } },
@@ -165,7 +165,7 @@
       role: { zh: '🏕️ 童軍團隊長', en: '🏕️ Scout troop leader', ja: '🏕️ ボーイスカウト隊長' },
       title: { zh: '學會帶著一群人完成任務', en: 'Learning to lead a team to get things done', ja: 'チームをまとめて物事を成し遂げる力を学んだ' },
       desc: { zh: '國中時加入童軍，並擔任隊長。學會野外求生技巧、也學會怎麼帶著一群人一起完成任務——這些能力後來都用在帶領不落蒂聯盟上。', en: 'I joined scouts in junior high and became troop leader. I learned wilderness survival skills and how to lead a group to complete tasks together — abilities I later used to lead the No Butts Alliance.', ja: '中学でボーイスカウトに加わり、隊長を務めました。野外生存技術だけでなく、みんなをまとめて任務を達成する方法も学び、その力は後に不落蒂聯盟を率いる際にも役立ちました。' } },
-    trip: { icon: '🧭', img: null,
+    trip: { icon: '🧭', img: 'assets/images/trip.jpg', pos: '78% center',
       role: { zh: '🧭 壯遊與環島', en: '🧭 Grand journeys & round-island trips', ja: '🧭 壮遊と台湾一周' },
       title: { zh: '在路上學習、在挑戰裡成長', en: 'Learning on the road, growing through challenges', ja: '旅の中で学び、挑戦の中で成長する' },
       desc: { zh: '參加過基隆、台中等地的小隊壯遊行動，也完成過環島壯遊，喜歡在路上學習、在挑戰裡成長。', en: "I've taken part in small-group grand journeys in places like Keelung and Taichung, and completed a round-island trip. I love learning on the road and growing through challenges.", ja: '基隆や台中などでの班別壮遊活動に参加し、台湾一周の壮遊も達成しました。旅の中で学び、挑戦の中で成長するのが好きです。' } },
@@ -210,7 +210,7 @@
     detailTitle.textContent = title;
     detailDesc.textContent = s.desc[lang] || s.desc.zh;
     detailMedia.innerHTML = s.img
-      ? '<img src="' + s.img + '" alt="' + title + '">'
+      ? '<img src="' + s.img + '" alt="' + title + '" style="object-position:' + (s.pos || 'center') + '">'
       : '<span>' + s.icon + '</span>';
     var oldEmbed = document.getElementById('st-detail-video');
     if (oldEmbed) oldEmbed.remove();

@@ -811,7 +811,8 @@ footer .copyright { width: 100%; margin-top: 20px; color: #7fa189; font-size: 0.
 }
 
 /* grid cards: a photo strip on top (roughly a quarter of the card) */
-.card.action-card > .card-thumb { height: 120px; margin-bottom: 14px; }
+.card.action-card > .card-thumb,
+.card.card-link > .card-thumb { height: 120px; margin-bottom: 14px; }
 
 /* timeline entries: thumbnail floats right, about a quarter of the row */
 .full-log .tl-item.action-card > .card-thumb {
@@ -840,3 +841,14 @@ footer .copyright { width: 100%; margin-top: 20px; color: #7fa189; font-size: 0.
 }
 .country-flag { font-size: 1.5rem; line-height: 1; }
 .country-block .timeline { margin-bottom: 0; }
+
+/* ---------- Squads page ---------- */
+.squad-block .squad-intro { margin: 0 0 16px; color: #55634e; }
+.squad-pending {
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px dashed var(--green-700);
+  border-radius: 14px;
+  color: #55634e;
+  background: rgba(255, 255, 255, 0.6);
+}
