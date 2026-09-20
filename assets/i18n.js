@@ -127,6 +127,7 @@
       'cat.art': 'Art & Creation',
       'cat.tech': 'Tech Innovation',
       'cat.squad': 'Squads',
+      'squads.back': '← Back to the No Butts Alliance',
       'squads.cta': 'See the squad’s actions →',
       'squads.pending': 'This squad’s action records are being compiled — coming soon.',
       'squads.total': 'Three-year total',
@@ -568,6 +569,7 @@
       'cat.art': 'アート創作',
       'cat.tech': '技術革新',
       'cat.squad': '分隊',
+      'squads.back': '← 不落蒂聯盟に戻る',
       'squads.cta': '分隊の活動を見る →',
       'squads.pending': 'この分隊の活動記録は整理中です。追って掲載します。',
       'squads.total': '3年間の累計',
@@ -1003,7 +1005,7 @@
     document.querySelectorAll('.lang-switch button').forEach(function (btn) {
       btn.addEventListener('click', function () { applyLanguage(btn.dataset.lang); });
     });
-    applyLanguage(getStored() || 'zh');
-    window.SITE_READY = loadOverrides().then(function () { applyLanguage(getStored() || 'zh'); });
+    applyLanguage(getStored() || 'en');
+    window.SITE_READY = loadOverrides().then(function () { applyLanguage(getStored() || 'en'); });
   });
 })();
