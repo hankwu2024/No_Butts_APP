@@ -191,14 +191,6 @@
 
   function getLang() { return window.currentLang || 'zh'; }
 
-  function processInstagramEmbed(retriesLeft) {
-    if (window.instgrm && window.instgrm.Embeds) {
-      window.instgrm.Embeds.process();
-    } else if (retriesLeft > 0) {
-      setTimeout(function () { processInstagramEmbed(retriesLeft - 1); }, 300);
-    }
-  }
-
   function showSkill(key) {
     var s = skillData[key];
     if (!s) return;
@@ -217,10 +209,11 @@
       var wrap = document.createElement('div');
       wrap.id = 'st-detail-video';
       wrap.style.marginTop = '14px';
+      var watch = { zh: '在 Instagram 觀看 →', en: 'Watch on Instagram →', ja: 'Instagramで見る →' };
       wrap.innerHTML =
-        '<blockquote class="instagram-media" data-instgrm-permalink="' + s.igVideo + '" data-instgrm-version="14" style="margin:0; width:100%;"></blockquote>';
+        '<iframe src="' + s.igVideo + 'embed/" title="' + title + '" style="display:block; width:100%; max-width:400px; aspect-ratio:9/16; border:0; border-radius:12px; background:#000;" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>' +
+        '<a href="' + s.igVideo + '" target="_blank" rel="noopener" style="display:inline-block; margin-top:8px;">' + (watch[lang] || watch.zh) + '</a>';
       detailDesc.insertAdjacentElement('afterend', wrap);
-      processInstagramEmbed(20);
     }
     nodes.forEach(function (n) {
       n.classList.toggle('active', n.dataset.skill === key);
@@ -235,7 +228,6 @@
 
   showSkill('karate');
 </script>
-<script async src="//www.instagram.com/embed.js"></script>
 
 <footer>
   <div class="wrap">
