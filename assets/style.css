@@ -165,9 +165,10 @@ a:hover { text-decoration: underline; }
   margin-bottom: 18px;
 }
 
-.action-modal-media img { width: 100%; height: 100%; object-fit: cover; }
+.action-modal-media:has(img) { aspect-ratio: auto; background: none; }
+.action-modal-media img { width: 100%; height: auto; max-height: 60vh; object-fit: contain; border-radius: 14px; cursor: zoom-in; }
 .action-modal-media.multi { aspect-ratio: auto; flex-direction: column; gap: 8px; background: none; overflow: visible; }
-.action-modal-media.multi img { height: auto; aspect-ratio: 4/3; border-radius: 14px; }
+.action-modal-media.multi img { height: auto; border-radius: 14px; }
 .action-modal-icon { font-size: 3rem; }
 
 .action-modal-panel h3 { margin: 0 0 10px; color: var(--green-900); font-size: 1.2rem; }
@@ -867,3 +868,21 @@ footer .copyright { width: 100%; margin-top: 20px; color: #7fa189; font-size: 0.
 .medal-g { color: #a8740a; }
 .medal-s { color: #6b7280; }
 .medal-b { color: #9a5b2c; }
+
+/* ---------- Lightbox (full original photo) ---------- */
+main img, section img, .hero img, figure img { cursor: zoom-in; }
+.brand img, a img, .action-card img { cursor: inherit; }
+.lightbox {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; background: rgba(10, 18, 14, 0.92); cursor: zoom-out;
+}
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 100%; max-height: calc(100vh - 110px); width: auto; height: auto; object-fit: contain; border-radius: 8px; cursor: default; }
+.lightbox-caption { margin: 12px 0 0; color: #e4eee8; font-size: 0.92rem; text-align: center; max-width: 60ch; }
+.lightbox-caption:empty { display: none; }
+.lightbox-close {
+  position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.4); color: #fff; font-size: 1rem; cursor: pointer;
+}
+body.lightbox-open { overflow: hidden; }

@@ -462,7 +462,9 @@
       'project.media.m3': 'Yahoo News: Managing cigarette butts with one app',
       'project.media.m4': 'The Reporter for Teens: What 100 butts in 5 minutes taught us',
       'project.media.m5': 'PTS "Follow Me! Go!": Arctic special',
-      'project.media.m6': 'Kobe Shimbun / Nihonkai Shimbun: Taiwan–Japan exchange coverage'
+      'project.media.m6': 'Kobe Shimbun / Nihonkai Shimbun: Taiwan–Japan exchange coverage',
+      'project.media.m7': 'Liberty Times: Youth groups invite the public to pick up cigarette butts (Sep 2026)',
+      'project.media.m8': 'YouTube live: 0927 No Butts Alliance × Yi Yi Bu She joint youth advocacy in Taipei'
     },
 
     ja: {
@@ -925,7 +927,9 @@
       'project.media.m3': 'Yahoo News：アプリでタバコの吸い殻問題を管理',
       'project.media.m4': '少年報導者：5分間で100本の吸い殻を拾って学んだこと',
       'project.media.m5': '公視『下課花路米』：北極特集',
-      'project.media.m6': '日本の神戸新聞／日本海新聞：台日交流の報道'
+      'project.media.m6': '日本の神戸新聞／日本海新聞：台日交流の報道',
+      'project.media.m7': '自由時報：子ども団体が街頭での吸い殻拾いを呼びかけ（2026年9月）',
+      'project.media.m8': 'YouTubeライブ：0927 不落蒂聯盟 × 衣衣不捨チーム 台北子ども共同アピール',
     }
   };
 
