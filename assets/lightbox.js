@@ -11,12 +11,10 @@
   function zoomable(img) {
     return !img.closest('.brand, .action-card, .lightbox, a, button');
   }
-  function open(img) {
-    boxImg.src = img.currentSrc || img.src;
-    boxImg.alt = img.alt;
-    var fig = img.closest('figure');
-    var cap = fig && fig.querySelector('figcaption');
-    boxCaption.textContent = cap ? cap.textContent : '';
+  function open(src, alt, caption) {
+    boxImg.src = src;
+    boxImg.alt = alt || '';
+    boxCaption.textContent = caption || '';
     box.hidden = false;
     document.body.classList.add('lightbox-open');
   }
@@ -27,8 +25,22 @@
   }
 
   document.addEventListener('click', function (e) {
+    // buttons/links can open a photo that isn't shown on the page: data-lightbox="path"
+    var trigger = e.target.closest('[data-lightbox]');
+    if (trigger) {
+      e.preventDefault();
+      var li = trigger.closest('li');
+      var label = li && li.querySelector('[data-i18n]');
+      open(trigger.dataset.lightbox, '', label ? label.textContent : '');
+      return;
+    }
     var img = e.target.closest('img');
-    if (img && zoomable(img)) { e.preventDefault(); open(img); }
+    if (img && zoomable(img)) {
+      e.preventDefault();
+      var fig = img.closest('figure');
+      var cap = fig && fig.querySelector('figcaption');
+      open(img.currentSrc || img.src, img.alt, cap ? cap.textContent : '');
+    }
   });
   box.addEventListener('click', function (e) { if (e.target !== boxImg) close(); });
   document.addEventListener('keydown', function (e) {

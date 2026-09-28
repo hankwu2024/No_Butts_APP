@@ -903,3 +903,39 @@ body.lightbox-open { overflow: hidden; }
   .award-year { grid-template-columns: 1fr; gap: 10px; padding: 18px 0; }
   .award-year-label { font-size: 1.3rem; }
 }
+.award-group-title { margin: 8px 0 12px; font-size: 1.05rem; color: var(--green-900); }
+.award-timeline + .award-group-title { margin-top: 36px; }
+.award-note { margin: 24px 0 0; }
+.award-note a { font-weight: 700; }
+.award-photo {
+  margin-left: 6px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
+  background: #fff; color: var(--green-700); font: inherit; font-size: 0.8rem; font-weight: 600; cursor: zoom-in;
+}
+.award-photo:hover { border-color: var(--green-700); }
+
+/* ---------- Collapsible lists (project page) ---------- */
+.cat-btn[data-count]::after { content: attr(data-count); margin-left: 6px; font-size: 0.78em; opacity: 0.75; }
+.more-btn {
+  display: block; margin: 18px auto 0; padding: 10px 22px; border-radius: 999px;
+  border: 1px solid var(--green-700); background: #fff; color: var(--green-700);
+  font: inherit; font-weight: 700; cursor: pointer;
+}
+.more-btn:hover { background: var(--green-700); color: #fff; }
+.more-btn[hidden], .chip[hidden], .tl-item[hidden] { display: none; }
+.country-details { border: 1px solid var(--line); border-radius: 14px; background: #fff; padding: 0 18px; }
+.country-details summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px;
+  padding: 14px 0; font-weight: 700; font-size: 1.1rem; color: var(--green-900);
+}
+.country-details summary::-webkit-details-marker { display: none; }
+.country-details summary::after { content: '▾'; margin-left: auto; color: var(--green-700); }
+.country-details[open] summary::after { content: '▴'; }
+.country-details[open] { padding-bottom: 12px; }
+.country-details .count { font-size: 0.8rem; font-weight: 600; background: var(--green-100); color: var(--green-700); border-radius: 999px; padding: 1px 9px; }
+.country-block { margin-bottom: 12px; }
+.photo-grid.photo-strip {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 28%);
+  grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px;
+}
+.photo-grid.photo-strip figure { scroll-snap-align: start; }
+@media (max-width: 860px) { .photo-grid.photo-strip { grid-auto-columns: 70%; } }
