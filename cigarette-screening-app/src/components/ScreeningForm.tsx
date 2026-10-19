@@ -465,7 +465,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
 
                 <div
                   ref={mapContainerRef}
-                  className="w-full h-64 bg-white border border-slate-200 rounded-lg shadow-inner mb-2 z-0"
+                  className="w-full h-64 bg-white border border-slate-200 rounded-lg shadow-inner mb-2 relative z-0 isolate"
                 />
 
                 <div className="text-xs text-slate-500 flex justify-between">

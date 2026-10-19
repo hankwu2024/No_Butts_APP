@@ -144,7 +144,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
         <h4 className="font-bold text-sm text-slate-700">{title}</h4>
         <span className="text-[10px] text-slate-400">{routes.length} 筆路線資料</span>
       </div>
-      <div ref={containerRef} className="w-full h-64" />
+      <div ref={containerRef} className="w-full h-64 relative z-0 isolate" />
       <div className="px-3 pt-2 flex items-center gap-2">
         <span className="text-[10px] text-slate-400 shrink-0">少</span>
         <div
