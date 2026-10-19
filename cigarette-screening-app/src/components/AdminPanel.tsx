@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Lock, LogOut, ShieldCheck, Trash2, Navigation } from 'lucide-react';
+import { Lock, LogOut, ShieldCheck, Trash2, Navigation, X } from 'lucide-react';
 import { pb } from '../config/pocketbase';
 import type { ScreeningData, FilterState, SortState } from '../types';
 import FilterSortBar from './FilterSortBar';
 import PathPreview from './PathPreview';
+import BackupTools from './BackupTools';
 
 interface AdminPanelProps {
   userId: string;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = () => {
+const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [password, setPassword] = useState('');
     const [data, setData] = useState<ScreeningData[]>([]);
     const [deleteConfirm, setDeleteConfirm] = useState<{show: boolean, id: string | null}>({show: false, id: null});
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const [filter, setFilter] = useState<FilterState>({ city: '', dateStart: '', dateEnd: '', address: '', recordId: '', personnel: '' });
     const [sort, setSort] = useState<SortState>({ field: 'recordId', direction: 'desc' });
@@ -138,6 +140,13 @@ const AdminPanel: React.FC<AdminPanelProps> = () => {
 
     return (
         <div className="pb-20">
+            {selectedImage && (
+                <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-fadeIn" onClick={() => setSelectedImage(null)}>
+                    <img src={selectedImage} alt="Full size" className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
+                    <button onClick={() => setSelectedImage(null)} className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full p-2"><X className="w-6 h-6" /></button>
+                </div>
+            )}
+
             {deleteConfirm.show && (
                 <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
                     <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col max-w-sm w-full">
@@ -173,6 +182,9 @@ const AdminPanel: React.FC<AdminPanelProps> = () => {
             </div>
 
             <div className="px-4">
+                <div className="mb-4">
+                    <BackupTools records={filteredSortedData} userId={userId} />
+                </div>
                 <div className="mb-4">
                     <FilterSortBar
                         filter={filter}
@@ -220,6 +232,16 @@ const AdminPanel: React.FC<AdminPanelProps> = () => {
                                     <span>{record.distance?.toFixed(1) || 0} 公尺</span>
                                   </div>
                                   <PathPreview path={record.path} />
+                                </div>
+                            )}
+
+                            {record.images && record.images.length > 0 && (
+                                <div className="flex gap-2 overflow-x-auto pb-1">
+                                    {record.images.map((imgSrc, imgIdx) => (
+                                        <button key={imgIdx} type="button" onClick={() => setSelectedImage(imgSrc)} className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden border border-slate-200">
+                                            <img src={imgSrc} alt="Evidence" className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
                                 </div>
                             )}
 

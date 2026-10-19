@@ -48,7 +48,7 @@ export default function App() {
       </div>
       <div className="p-4">
         {activeTab === 'form' && <ScreeningForm userId={userId} onSubmitSuccess={() => setActiveTab('dashboard')} />}
-        {activeTab === 'dashboard' && <Dashboard userId={userId} />}
+        {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'admin' && <AdminPanel userId={userId} />}
       </div>
     </div>
