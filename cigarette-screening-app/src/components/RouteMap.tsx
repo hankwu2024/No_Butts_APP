@@ -1,14 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import L from 'leaflet';
-import { intersect } from '@turf/intersect';
-import { featureCollection } from '@turf/helpers';
-import { bboxPolygon } from '@turf/bbox-polygon';
-import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import type { ScreeningData } from '../types';
 import { getSeverityColor, SEVERITY_LEGEND_STOPS } from '../utils/colorScale';
-import taiwanGeoJson from '../data/taiwan.geo.json';
-
-const TAIWAN_BOUNDARY = taiwanGeoJson.features[0] as unknown as Feature<MultiPolygon>;
 
 interface RouteMapProps {
   title: string;
@@ -18,6 +11,7 @@ interface RouteMapProps {
 }
 
 const AGGREGATE_ZOOM_THRESHOLD = 14;
+const CLUSTER_CELL_PX = 64;
 
 const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '根' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,14 +22,16 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
   const unitRef = useRef(unit);
   const renderRef = useRef<() => void>(() => {});
 
-  const routes = data.filter(d => d.path && d.path.length > 1);
+  const routes = useMemo(() => data.filter(d => d.path && d.path.length > 1), [data]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const map = L.map(containerRef.current).setView([23.6978, 120.9605], 8);
+    // canvas renderer keeps zooming smooth; the grey basemap keeps the severity colors readable
+    const map = L.map(containerRef.current, { preferCanvas: true }).setView([23.6978, 120.9605], 8);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
+      className: 'muted-tiles',
       maxZoom: 19,
     }).addTo(map);
     mapRef.current = map;
@@ -65,46 +61,34 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
             .addTo(currentLayer);
         });
       } else {
-        const cellSizeDeg = (360 / Math.pow(2, zoom)) * 2;
-        const cells = new Map<string, { count: number; sum: number; south: number; west: number }>();
+        // cluster routes within roughly CLUSTER_CELL_PX screen pixels of each other
+        const cellSizeDeg = (CLUSTER_CELL_PX * 360) / (256 * Math.pow(2, zoom));
+        const cells = new Map<string, { count: number; sum: number; lat: number; lng: number }>();
 
         currentRoutes.forEach(r => {
           const pts = r.path!;
           const lat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
           const lng = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
-          const gy = Math.floor(lat / cellSizeDeg);
-          const gx = Math.floor(lng / cellSizeDeg);
-          const key = `${gy}_${gx}`;
-          const value = r[field] || 0;
+          const key = `${Math.floor(lat / cellSizeDeg)}_${Math.floor(lng / cellSizeDeg)}`;
 
-          if (!cells.has(key)) {
-            cells.set(key, { count: 0, sum: 0, south: gy * cellSizeDeg, west: gx * cellSizeDeg });
-          }
+          if (!cells.has(key)) cells.set(key, { count: 0, sum: 0, lat: 0, lng: 0 });
           const cell = cells.get(key)!;
           cell.count += 1;
-          cell.sum += value;
+          cell.sum += r[field] || 0;
+          cell.lat += lat;
+          cell.lng += lng;
         });
 
+        // one circle per cell, placed at the centre of its routes and sized by route count
         cells.forEach(cell => {
           const avg = cell.sum / cell.count;
-          const cellPolygon = bboxPolygon([
-            cell.west,
-            cell.south,
-            cell.west + cellSizeDeg,
-            cell.south + cellSizeDeg,
-          ]);
-
-          let clipped;
-          try {
-            clipped = intersect(featureCollection<Polygon | MultiPolygon>([cellPolygon, TAIWAN_BOUNDARY]));
-          } catch {
-            clipped = null;
-          }
-          if (!clipped) return; // cell falls entirely over the ocean, skip it
-
           const color = getSeverityColor(avg);
-          L.geoJSON(clipped, {
-            style: { color, weight: 1, fillColor: color, fillOpacity: 0.45 },
+          L.circleMarker([cell.lat / cell.count, cell.lng / cell.count], {
+            radius: Math.min(10 + Math.sqrt(cell.count) * 5, 28),
+            color: '#ffffff',
+            weight: 2,
+            fillColor: color,
+            fillOpacity: 0.85,
           })
             .bindTooltip(`區域平均：${avg.toFixed(0)} ${currentUnit}（${cell.count} 筆路線）`)
             .addTo(currentLayer);
@@ -113,11 +97,11 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
     };
 
     renderRef.current = doRender;
-    map.on('zoomend moveend', doRender);
+    map.on('zoomend', doRender);
     doRender();
 
     return () => {
-      map.off('zoomend moveend', doRender);
+      map.off('zoomend', doRender);
       map.remove();
       mapRef.current = null;
     };
@@ -129,14 +113,15 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
     routesRef.current = routes;
     valueFieldRef.current = valueField;
     unitRef.current = unit;
-    renderRef.current();
 
     if (!fittedRef.current && routes.length > 0 && mapRef.current) {
       const allPoints = routes.flatMap(r => r.path!.map(p => [p.lat, p.lng] as [number, number]));
-      mapRef.current.fitBounds(L.latLngBounds(allPoints), { padding: [30, 30], maxZoom: 16 });
       fittedRef.current = true;
+      // fitBounds fires zoomend, which renders; render directly too in case the zoom doesn't change
+      mapRef.current.fitBounds(L.latLngBounds(allPoints), { padding: [30, 30], maxZoom: 16 });
     }
-  });
+    renderRef.current();
+  }, [routes, valueField, unit]);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
@@ -159,7 +144,7 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
         ))}
       </div>
       <p className="px-3 pb-3 text-[10px] text-slate-400 leading-relaxed">
-        縮小地圖會自動改以區塊平均數量統計；滑鼠移到路線或色塊上可看到詳細數字。
+        縮小地圖會自動把鄰近路線合併成圓點（顏色＝平均數量、大小＝路線筆數）；滑鼠移到路線或色塊上可看到詳細數字。
       </p>
     </div>
   );
