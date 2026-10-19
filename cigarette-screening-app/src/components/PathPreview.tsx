@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface PathPoint {
   lat: number;
@@ -10,74 +12,70 @@ interface PathPreviewProps {
 }
 
 const PathPreview: React.FC<PathPreviewProps> = ({ path }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  // 列表可能很長，等卡片捲進畫面才建立地圖
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || visible) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !path || path.length === 0) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const el = containerRef.current;
+    if (!visible || !el || !path || path.length === 0) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 預覽用的小地圖：不攔截捲動與拖曳，避免手機上滑不動列表
+    const map = L.map(el, {
+      preferCanvas: true,
+      zoomControl: false,
+      attributionControl: false,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      touchZoom: false,
+      boxZoom: false,
+      keyboard: false,
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      className: 'muted-tiles',
+      maxZoom: 19,
+    }).addTo(map);
 
-    if (path.length === 1) {
-      ctx.fillStyle = '#22c55e';
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (path.length > 1) {
-      const lats = path.map(p => p.lat);
-      const lngs = path.map(p => p.lng);
-      const minLat = Math.min(...lats);
-      const maxLat = Math.max(...lats);
-      const minLng = Math.min(...lngs);
-      const maxLng = Math.max(...lngs);
+    const latlngs = path.map(p => [p.lat, p.lng] as [number, number]);
+    const start = latlngs[0];
+    const end = latlngs[latlngs.length - 1];
 
-      const latDiff = maxLat - minLat || 0.0001;
-      const lngDiff = maxLng - minLng || 0.0001;
-
-      const padding = 15;
-      const usableWidth = canvas.width - padding * 2;
-      const usableHeight = canvas.height - padding * 2;
-
-      const getX = (lng: number) => padding + ((lng - minLng) / lngDiff) * usableWidth;
-      const getY = (lat: number) => canvas.height - (padding + ((lat - minLat) / latDiff) * usableHeight);
-
-      // 畫連線
-      ctx.beginPath();
-      ctx.strokeStyle = '#059669';
-      ctx.lineWidth = 2;
-      path.forEach((p, i) => {
-        const x = getX(p.lng);
-        const y = getY(p.lat);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-
-      // 畫起點與終點
-      const startX = getX(path[0].lng);
-      const startY = getY(path[0].lat);
-      ctx.fillStyle = '#22c55e'; // 綠色起點
-      ctx.beginPath();
-      ctx.arc(startX, startY, 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      const endX = getX(path[path.length - 1].lng);
-      const endY = getY(path[path.length - 1].lat);
-      ctx.fillStyle = '#ef4444'; // 紅色終點
-      ctx.beginPath();
-      ctx.arc(endX, endY, 5, 0, Math.PI * 2);
-      ctx.fill();
+    if (latlngs.length > 1) {
+      L.polyline(latlngs, { color: '#059669', weight: 4, opacity: 0.9 }).addTo(map);
+      map.fitBounds(L.latLngBounds(latlngs), { padding: [16, 16], maxZoom: 17 });
+    } else {
+      map.setView(start, 16);
     }
-  }, [path]);
+
+    // 綠色起點、紅色終點
+    L.circleMarker(start, { radius: 6, color: '#ffffff', weight: 2, fillColor: '#22c55e', fillOpacity: 1 }).addTo(map);
+    if (latlngs.length > 1) {
+      L.circleMarker(end, { radius: 6, color: '#ffffff', weight: 2, fillColor: '#ef4444', fillOpacity: 1 }).addTo(map);
+    }
+
+    return () => {
+      map.remove();
+    };
+  }, [visible, path]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={400}
-      height={150}
-      className="w-full h-24 bg-white border border-slate-200 rounded-lg shadow-inner object-contain mt-1"
+    <div
+      ref={containerRef}
+      className="w-full h-36 bg-white border border-slate-200 rounded-lg shadow-inner mt-1 overflow-hidden relative z-0 isolate"
     />
   );
 };
